@@ -662,3 +662,31 @@ window.toggleNotificationSetting = function(key) {
     // 如果有 showAlert 可以用，不然用 console
     if(window.showAlert) showAlert(`${status}通知`, "設定更新");
 }
+
+// [新增] 開啟登入視窗
+function openLoginModal() {
+    const modal = document.getElementById('login-overlay');
+    if (modal) {
+        modal.style.display = 'flex';
+        // 加入簡單的淡入動畫 (選用)
+        modal.style.opacity = '0';
+        setTimeout(() => {
+            modal.style.transition = 'opacity 0.3s';
+            modal.style.opacity = '1';
+        }, 10);
+    }
+}
+
+// [新增] 關閉登入視窗
+function closeLoginModal() {
+    const modal = document.getElementById('login-overlay');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// [選用] 平滑捲動
+function scrollToFeatures() {
+    // 如果你有做功能介紹區塊，可以用這個
+    alert("往下捲動查看功能介紹 (請自行擴充 HTML)");
+}

@@ -14,4 +14,3 @@ const provider = new firebase.auth.GoogleAuthProvider();// 建立 Google 登入�
 const db = firebase.firestore();// 取得 Firestore 資料庫實例
 
 const ADMIN_UID = "zxMKZHLkk1NvCKfAKEEWppXHCH73";
-

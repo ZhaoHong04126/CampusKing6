@@ -502,3 +502,240 @@
 .emoji-picker.show {
     display: flex;
 }
+
+
+/* --- Landing Page 廣告頁樣式 --- */
+#landing-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* 質感漸層背景 */
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    z-index: 1500; /* 蓋在 dashboard 之上，但在 login-overlay 之下 */
+}
+
+.landing-header {
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.landing-logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #4a90e2;
+}
+
+.btn-login-trigger {
+    background: transparent;
+    border: 2px solid #4a90e2;
+    color: #4a90e2;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-login-trigger:hover {
+    background: #4a90e2;
+    color: white;
+}
+
+.landing-hero {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    gap: 50px;
+    flex-wrap: wrap;
+}
+
+.hero-content {
+    max-width: 500px;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #333;
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.btn-cta {
+    background: #4a90e2;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
+    transition: transform 0.2s;
+}
+
+.btn-cta:hover {
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: #666;
+    border: none;
+    padding: 15px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+/* 浮動卡片裝飾 */
+.hero-image {
+    position: relative;
+    width: 380px;       /* 設定為正方形，作為圓的容器 */
+    height: 380px;
+    margin: 20px auto;  /* 居中 */
+    /* border: 1px dashed #ddd; */ /* 開發時可打開此行輔助對齊 */
+}
+
+.floating-card {
+    position: absolute;
+    background: white;
+    padding: 10px 18px;
+    border-radius: 20px; /* 改得更圓潤一點 */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    font-weight: bold;
+    color: #333;
+    font-size: 0.9rem;
+    white-space: nowrap; /* 不換行 */
+    z-index: 2;
+    
+    /* 關鍵：設定基準點為「水平置中」，這樣計算座標才會準 */
+    transform: translateX(-50%);
+    
+    /* 套用浮動動畫 */
+    animation: float-circle 6s ease-in-out infinite;
+}
+
+/* --- 個別標籤的位置、顏色與動畫延遲 --- */
+
+/* 1. 正上方 (0度) */
+.c1 {
+    top: 0%;
+    left: 50%;
+    color: #4a90e2;
+    border-left: 4px solid #4a90e2;
+    animation-delay: 0s;
+}
+
+/* 2. 右上方 (約51度) */
+.c2 {
+    top: 18%;
+    left: 85%;
+    color: #9b59b6;
+    border-left: 4px solid #9b59b6;
+    animation-delay: 1s;
+}
+
+/* 3. 右下方 (約102度) */
+.c3 {
+    top: 60%;
+    left: 96%;
+    color: #e74c3c;
+    border-left: 4px solid #e74c3c;
+    animation-delay: 2s;
+}
+
+/* 4. 底部偏右 (約154度) */
+.c4 {
+    top: 92%;
+    left: 78%;
+    color: #f39c12;
+    border-left: 4px solid #f39c12;
+    animation-delay: 3s;
+}
+
+/* 5. 底部偏左 (約205度) */
+.c5 {
+    top: 92%;
+    left: 22%;
+    color: #1abc9c;
+    border-left: 4px solid #1abc9c;
+    animation-delay: 4s;
+}
+
+/* 6. 左下方 (約257度) */
+.c6 {
+    top: 60%;
+    left: 4%;
+    color: #2ecc71;
+    border-left: 4px solid #2ecc71;
+    animation-delay: 5s;
+}
+
+/* 7. 左上方 (約308度) */
+.c7 {
+    top: 18%;
+    left: 15%;
+    color: #e84393;
+    border-left: 4px solid #e84393;
+    animation-delay: 1.5s;
+}
+
+/* --- 專用的浮動動畫 (必須包含 translateX(-50%) 以維持定位) --- */
+@keyframes float-circle {
+    0%   { transform: translateX(-50%) translateY(0px); }
+    50%  { transform: translateX(-50%) translateY(-10px); } /* 上浮幅度 */
+    100% { transform: translateX(-50%) translateY(0px); }
+}
+
+.landing-footer {
+    text-align: center;
+    padding: 20px;
+    color: #999;
+    font-size: 0.8rem;
+}
+
+/* 登入視窗的關閉按鈕 */
+.btn-close-modal {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    color: #999;
+    cursor: pointer;
+}
+
+/* --- 手機版適配 (縮小圓圈) --- */
+@media (max-width: 450px) {
+    .hero-image {
+        width: 300px;  /* 縮小容器尺寸 */
+        height: 300px;
+        margin-top: 40px;
+    }
+    
+    .floating-card {
+        padding: 8px 12px;
+        font-size: 0.8rem; /* 字體縮小 */
+    }
+    
+    /* 手機版微調座標，避免太靠邊被切到 */
+    .c3 { left: 92%; } 
+    .c6 { left: 8%; }
+}

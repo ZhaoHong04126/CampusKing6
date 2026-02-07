@@ -156,14 +156,41 @@ function resetIdentity() {
 }
 
 // 更新登入 UI 狀態
+// 修改後的 updateLoginUI 狀態
 function updateLoginUI(isLoggedIn) {
     const loginOverlay = document.getElementById('login-overlay');
+    const landingPage = document.getElementById('landing-page'); // 新增
+    const dashboard = document.querySelector('.dashboard-container'); // 主程式介面
     const userInfo = document.getElementById('user-info');
     const userPhoto = document.getElementById('user-photo');
     
-    if (loginOverlay) loginOverlay.style.display = isLoggedIn ? 'none' : 'flex';// 根據登入狀態顯示或隱藏遮罩
-    if (userInfo) userInfo.style.display = isLoggedIn ? 'flex' : 'none';// 顯示或隱藏右上角使用者資訊
-    if (userPhoto && currentUser) userPhoto.src = currentUser.photoURL || "https://cdn-icons-png.flaticon.com/512/847/847969.png";// 如果已登入，更新使用者大頭貼
+    if (isLoggedIn) {
+        // --- 登入狀態 ---
+        // 隱藏登入彈窗
+        if (loginOverlay) loginOverlay.style.display = 'none';
+        // 隱藏廣告落地頁
+        if (landingPage) landingPage.style.display = 'none';
+        // 顯示主程式
+        if (dashboard) dashboard.style.display = 'flex'; // 或 grid，視你的 css 而定
+        
+        // 顯示右上角使用者資訊
+        if (userInfo) userInfo.style.display = 'flex';
+        if (userPhoto && currentUser) userPhoto.src = currentUser.photoURL || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+    } else {
+        // --- 未登入狀態 ---
+        // 確保登入彈窗預設是關閉的 (要按按鈕才開)
+        // 除非你希望一進來就彈窗，那這裡可以改 flex
+        if (loginOverlay) loginOverlay.style.display = 'none'; 
+        
+        // **顯示廣告落地頁**
+        if (landingPage) landingPage.style.display = 'flex';
+        
+        // 隱藏主程式
+        if (dashboard) dashboard.style.display = 'none';
+        
+        // 隱藏使用者資訊
+        if (userInfo) userInfo.style.display = 'none';
+    }
 }
 
 // 忘記密碼功能
