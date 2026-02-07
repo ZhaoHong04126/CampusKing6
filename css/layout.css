@@ -1,0 +1,228 @@
+#top-bar {
+    height: 60px;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    padding: 0 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+}
+
+#app-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    padding-top: 60px;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: white;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 900;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.user-profile-card, .sidebar-footer, .nav-btn .text {
+    display: none;
+}
+.nav-menu {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+}
+
+.desktop-nav-group {
+    display: none;
+}
+.mobile-nav-btn {
+    display: flex;
+}
+
+.main-content {
+    flex: 1;
+    padding: 15px;
+    padding-bottom: 80px;
+    max-width: 100%;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+    body {
+        overflow: hidden;
+        padding-bottom: 0;
+    }
+
+    .dashboard-container {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        height: 100vh;
+        overflow: hidden;
+        padding-top: 60px;
+    }
+
+    .sidebar {
+        position: relative;
+        bottom: auto;
+        height: 100%;
+        flex-direction: column;
+        justify-content: flex-start;
+        background: white;
+        border-top: none;
+        border-right: 1px solid #eee;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .user-profile-card {
+        display: block;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .sidebar-footer {
+        display: block;
+        margin-top: auto;
+        width: 100%;
+    }
+    
+    .nav-menu {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .main-content {
+        height: 100%;
+        overflow-y: auto;
+        padding: 30px 40px;
+        background-color: #f4f7f6;
+    }
+    
+    .desktop-nav-group {
+        display: block;
+    }
+    .mobile-nav-btn {
+        display: none !important;
+    }
+}
+
+.nav-group-separator {
+    display: contents; 
+}
+
+@media (min-width: 768px) {
+    .nav-group-separator {
+        display: block;
+        margin-top: 10px;
+        border-top: 1px dashed #ddd;
+        padding-top: 10px;
+    }
+}
+
+/* App Launcher 佈局 */
+#view-home {
+    padding-top: 20px;
+    min-height: 80vh;
+    /* background-image: url('image.png');
+    background-size: cover; */
+}
+
+.app-grid {
+    display: grid;
+    /* 手機版一行 4 個，類似你的截圖 */
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 20px 10px;
+    padding: 10px;
+    justify-items: center;
+}
+
+.app-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.1s;
+    width: 70px; /* 限制點擊區域寬度 */
+}
+
+.app-item:active {
+    transform: scale(0.9); /* 點擊時縮放效果 */
+}
+
+.app-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 18px; /* 連續曲線圓角 (Squircle 風格) */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.8rem;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    margin-bottom: 8px;
+    user-select: none;
+}
+
+.app-label {
+    font-size: 0.8rem;
+    color: var(--text-main);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    font-weight: 500;
+}
+
+@media (min-width: 768px) {
+    .app-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 40px;
+        padding: 40px;
+    }
+    .app-icon {
+        width: 72px;
+        height: 72px;
+        font-size: 2.2rem;
+        border-radius: 22px;
+    }
+    .app-label {
+        font-size: 0.95rem;
+    }
+}
+
+#nav-back-btn {
+    padding: 10px; /* 增加觸控範圍 */
+    margin-right: 5px;
+    transition: transform 0.2s;
+}
+
+#nav-back-btn:active {
+    transform: scale(0.8); /* 按下時縮小效果 */
+    opacity: 0.8;
+}

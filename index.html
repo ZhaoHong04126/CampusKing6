@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>校園王</title>
+
+	<link rel="manifest" href="manifest.json">
+	<meta name="theme-color" content="#4a90e2">
+
+	<meta name="description" content="校園王 (CampusMate) - 專為學生設計的個人化校園生活管理助手。提供課表管理、成績追蹤、學期記帳與行事曆功能。">
+	<meta name="author" content="Huang Zhaohong">
+
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta name="apple-mobile-web-app-title" content="校園王">
+	<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2921/2921222.png">
+
+	<meta property="og:title" content="校園王 - 你的校園生活小幫手">
+	<meta property="og:description" content="輕鬆管理課表、追蹤成績與學分，還有記帳功能！">
+	<meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/2921/2921222.png">
+
+	<link rel="stylesheet" href="css/base.css">
+	<link rel="stylesheet" href="css/layout.css">
+	<link rel="stylesheet" href="css/components.css">
+	<link rel="stylesheet" href="css/pages.css">
+
+	<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+
+<body>
+	<!-- 頁首編排 -->
+	<nav id="top-bar">
+		<button id="nav-back-btn" onclick="goBack()" style="display: none; background: transparent; border: none; color: white; font-size: 1.5rem; margin-right: 10px; cursor: pointer;">⬅</button>
+		<h1 id="app-title">📅 校園王</h1>
+		<div id="user-info" style="display: none;">
+			<div class="user-details" style="text-align: right; margin-right: 10px;">
+				<div id="user-name-display" style="color: white; font-weight: bold; font-size: 0.95rem; margin-bottom: 2px;">同學</div>
+				<span id="user-badge" style="color: white; background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">訪客</span>
+			</div>
+			<img id="user-photo" src="" alt="User" style="width: 36px; height: 36px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8);">
+		</div>
+	</nav>
+	<!-- 登入後的頁面 -->
+	<div class="dashboard-container">
+		<aside class="sidebar">
+			<div class="nav-menu">
+				<button class="nav-btn" onclick="switchTab('schedule')" id="btn-schedule">
+					<span class="icon">📅</span> <span class="text">課表</span>
+				</button>
+				<button class="nav-btn" onclick="switchTab('accounting')" id="btn-accounting">
+					<span class="icon">💰</span> <span class="text">記帳</span>
+				</button>
+				<button class="nav-btn active" onclick="switchTab('home')" id="btn-home">
+					<span class="icon" style="font-size: 1.4rem;">🏠</span> <span class="text">桌面</span>
+				</button>
+				<button class="nav-btn" onclick="switchTab('grade-manager')" id="btn-grade-manager">
+					<span class="icon">💯</span> <span class="text">成績</span>
+				</button>
+				<button class="nav-btn" onclick="switchTab('settings')" id="btn-settings">
+					<span class="icon">⚙️</span> <span class="text">設定</span>
+				</button>
+			</div>
+		</aside>
+
+		<main class="main-content">
+			<!-- 首頁頁面 -->
+			<div id="view-home">
+				<!-- 顯示學期器 -->
+				<div class="home-widgets-container">
+					<div class="semester-widget card">
+						<div class="semester-info">
+							<span class="widget-icon">📅</span>
+							<div class="widget-text">
+								<span class="widget-label">目前學期</span>
+								<select id="semester-select" class="semester-select"
+									onchange="switchSemester()"></select>
+							</div>
+						</div>
+
+						<div class="semester-actions">
+							<button class="btn-icon" onclick="editSemester()" title="重新命名">✏️</button>
+							<button class="btn-icon btn-delete-sem" onclick="deleteSemester()" title="刪除學期">🗑️</button>
+							<button class="btn-new-sem" onclick="addNewSemester()">+ 新學期</button>
+						</div>
+					</div>
+				</div>
+				<!-- 顯示所有APP -->
+				<div class="app-grid">
+					<div class="app-item" onclick="switchTab('schedule')">
+						<div class="app-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">📅</div>
+						<div class="app-label">課表</div>
+					</div>
+					<div class="app-item" onclick="switchTab('lottery')">
+						<div class="app-icon" style="background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%);"> 🎰 </div>
+						<div class="app-label">幸運籤筒</div>
+					</div>
+					<div class="app-item" onclick="switchTab('calendar')">
+						<div class="app-icon" style="background: linear-gradient(135deg, #fccb90 0%, #d57eeb 100%);"> 🗓️ </div>
+						<div class="app-label">行事曆</div>
+					</div>
+					<div class="app-item" onclick="switchTab('grade-manager')">
+						<div class="app-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);"> 💯 </div>
+						<div class="app-label">成績管理</div>
+					</div>
+					<div class="app-item" onclick="switchTab('accounting')">
+						<div class="app-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);"> 💰 </div>
+						<div class="app-label">學期記帳</div>
+					</div>
+					<div class="app-item" onclick="switchTab('notes')">
+						<div class="app-icon"
+							style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);"> 📝 </div>
+						<div class="app-label">快述記事</div>
+					</div>
+					<div class="app-item" onclick="switchTab('anniversary')">
+						<div class="app-icon" style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);"> 💝 </div>
+						<div class="app-label">紀念日</div>
+					</div>
+					<div class="app-item" onclick="switchTab('learning')">
+						<div class="app-icon" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);"> 📚 </div>
+						<div class="app-label">學習進度</div>
+					</div>
+					<div class="app-item" onclick="switchTab('info')">
+						<div class="app-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"> ℹ️ </div>
+						<div class="app-label">系統資訊</div>
+					</div>
+					<div class="app-item" onclick="switchTab('discussion')">
+						<div class="app-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"> 💬 </div>
+						<div class="app-label">討論區</div>
+					</div>
+					<div class="app-item" onclick="switchTab('notifications')">
+						<div class="app-icon" style="background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);"> 🔔 </div>
+						<div class="app-label">通知中心</div>
+					</div>
+					<div class="app-item" onclick="switchTab('settings')">
+						<div class="app-icon" style="background: linear-gradient(135deg, #505285 0%, #585e92 12%, #65689f 25%, #7474b0 37%, #7e7ebb 50%, #8389c7 62%, #9795d4 75%, #a2a1dc 87%, #b5aee4 100%);"> ⚙️ </div>
+						<div class="app-label">個人設定</div>
+					</div>
+				</div>
+			</div>
+			<!-- 課表頁面 -->
+			<div id="view-schedule" style="display: none;">
+				<div class="week-tabs" style="margin-bottom: 20px;">
+					<button class="tab-btn active" onclick="switchScheduleMode('daily')" id="btn-sch-daily">📅 本日課程</button>
+					<button class="tab-btn" onclick="switchScheduleMode('weekly')" id="btn-sch-weekly">🗓️ 週課表</button>
+				</div>
+
+				<div id="subview-sch-daily" style="display: block;">
+					<div class="card">
+						<div class="week-tabs">
+							<button class="tab-btn" onclick="switchDay(1)" id="tab-1">一</button>
+							<button class="tab-btn" onclick="switchDay(2)" id="tab-2">二</button>
+							<button class="tab-btn" onclick="switchDay(3)" id="tab-3">三</button>
+							<button class="tab-btn" onclick="switchDay(4)" id="tab-4">四</button>
+							<button class="tab-btn" onclick="switchDay(5)" id="tab-5">五</button>
+							<button class="tab-btn" onclick="switchDay(6)" id="tab-6">六</button>
+							<button class="tab-btn" onclick="switchDay(0)" id="tab-0">日</button>
+						</div>
+						
+						<h2 id="schedule-title">本日課程</h2>
+						<table id="schedule-table">
+							<thead>
+								<tr>
+									<th width="15%">節次</th>
+									<th width="20%">時間</th>
+									<th width="25%">科目</th>
+									<th width="20%">地點</th>
+									<th width="20%">老師</th>
+								</tr>
+							</thead>
+							<tbody id="schedule-body"></tbody>
+						</table>
+						<button class="btn btn-add" onclick="openEditModal()">+ 編輯本日課程</button>
+					</div>
+				</div>
+				<div id="subview-sch-weekly" style="display: none;">
+					<div class="card">
+						<h2>📅 週課表
+							<button class="btn-icon" onclick="exportSchedule()"
+								style="font-size: 0.9rem; background: transparent; border: 1px solid #ddd;">📷 存成圖片</button>
+						</h2>
+						<div style="overflow-x: auto;">
+							<table class="weekly-table">
+								<thead>
+									<tr>
+										<th style="width: 40px; background: #f8f9fa;">節</th>
+										<th style="min-width: 60px;">一</th>
+										<th style="min-width: 60px;">二</th>
+										<th style="min-width: 60px;">三</th>
+										<th style="min-width: 60px;">四</th>
+										<th style="min-width: 60px;">五</th>
+										<th style="min-width: 60px; color:#e74c3c;">六</th>
+										<th style="min-width: 60px; color:#e74c3c;">日</th>
+									</tr>
+								</thead>
+								<tbody id="weekly-schedule-body">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- 籤筒頁頁面 -->
+			<div id="view-lottery" style="display: none;">
+				<div class="card" style="text-align: center; padding: 30px 20px;">
+					<h2 style="justify-content: center; border:none; margin-bottom: 10px;">🎰 今天運氣如何？</h2>
+					
+					<div id="lottery-result-box" style=" background: #f8f9fa; border: 2px dashed #ddd; border-radius: 12px; padding: 40px 20px; margin: 20px 0; min-height: 80px; display: flex; align-items: center; justify-content: center;">
+						<span id="lottery-result-text" style="font-size: 2rem; font-weight: bold; color: #aaa;">準備好了嗎？</span>
+					</div>
+
+					<button id="btn-draw" class="btn" style="width: 100%; padding: 15px; font-size: 1.2rem; background: var(--primary); box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);" onclick="startLottery()"> 🎲 開始抽籤 </button>
+				</div>
+
+				<div class="card">
+					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+						<h2 style="margin: 0; border: none;">📝 籤筒清單</h2>
+						<select id="lottery-category-select" onchange="switchLotteryCategory()" style="padding: 5px; border-radius: 6px; border: 1px solid #ddd;">
+							</select>
+					</div>
+
+					<div class="input-group" style="display: flex; gap: 10px;">
+						<input type="text" id="input-lottery-item" placeholder="新增選項 (例如: 麥當勞)" style="flex: 1;">
+						<button class="btn" onclick="addLotteryItem()" style="width: auto; background: #666;">+</button>
+					</div>
+
+					<div id="lottery-list" style="margin-top: 10px;"> </div>
+
+					<div style="margin-top: 20px; text-align: right;">
+						<button class="btn" onclick="addNewLotteryCategory()" style="background: transparent; color: var(--primary); border: 1px solid var(--primary); width: auto; font-size: 0.8rem;"> + 新增分類 </button>
+						<button class="btn" onclick="deleteLotteryCategory()" style="background: transparent; color: #e74c3c; border: 1px solid #e74c3c; width: auto; font-size: 0.8rem; margin-left: 5px;"> 🗑️ 刪除此分類 </button>
+					</div>
+				</div>
+			</div>
+			<!-- 行事曆頁頁面 -->
+			<div id="view-calendar" style="display: none;">
+				<div class="card">
+					<div class="calendar-header">
+						<button class="btn-icon" onclick="changeMonth(-1)">◀</button>
+						<h3 id="calendar-month-year" style="margin:0; border:none;">2026年 1月</h3>
+						<button class="btn-icon" onclick="changeMonth(1)">▶</button>
+					</div>
+					<div class="calendar-grid" id="calendar-grid">
+						<div class="cal-day-header" style="color:#e74c3c">日</div>
+						<div class="cal-day-header">一</div>
+						<div class="cal-day-header">二</div>
+						<div class="cal-day-header">三</div>
+						<div class="cal-day-header">四</div>
+						<div class="cal-day-header">五</div>
+						<div class="cal-day-header" style="color:#e74c3c">六</div>
+					</div>
+				</div>
+
+				<div class="card">
+					<h2>📅 學期行事曆</h2>
+					<div id="calendar-list" style="margin-bottom: 15px;">
+						<p style="color:#999; text-align:center;">載入中...</p>
+					</div>
+					<button class="btn btn-add" onclick="openCalendarModal()">+ 新增活動</button>
+				</div>
+			</div>
+			<!-- 紀錄成績頁頁面 -->
+			<div id="view-grade-manager" style="display: none;">
+				<div class="week-tabs" style="margin-bottom: 20px;">
+					<button class="tab-btn active" onclick="switchGradeTab('dashboard')" id="tab-grade-dashboard">📊 總覽</button>
+					<button class="tab-btn" onclick="switchGradeTab('regular')" id="tab-grade-regular">📝 平常考</button>
+					<button class="tab-btn" onclick="switchGradeTab('midterm')" id="tab-grade-midterm">🏆 段考</button>
+					<button class="tab-btn" onclick="switchGradeTab('list')" id="tab-grade-list">📄 成績單</button>
+					<button class="tab-btn" onclick="switchGradeTab('chart')" id="tab-grade-chart">📈 趨勢</button>
+					<button class="tab-btn" onclick="switchGradeTab('credits')" id="tab-grade-credits">🎓 學分</button>
+				</div>
+
+				<div id="subview-grade-dashboard" style="display: block;">
+					<div class="card" style="text-align: center; padding: 30px 20px;">
+						<h2 style="justify-content: center; border:none; margin-bottom: 20px;">🎓 本學期學業摘要</h2>
+						<div style="display: flex; justify-content: space-around; margin-bottom: 20px;">
+							<div style="flex: 1;">
+								<div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">加權平均</div>
+								<div id="dash-gpa" style="font-size: 2rem; font-weight: bold; color: var(--primary);"> 0.0</div>
+							</div>
+							<div style="flex: 1; border-left: 1px solid #eee; border-right: 1px solid #eee;">
+								<div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">實得學分</div>
+								<div id="dash-credits" style="font-size: 2rem; font-weight: bold; color: #2ecc71;"> 0 </div>
+							</div>
+							<div style="flex: 1;">
+								<div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">不及格科目</div>
+								<div id="dash-failed" style="font-size: 2rem; font-weight: bold; color: #e74c3c;"> 0 </div>
+							</div>
+						</div>
+						<div style="display: flex; gap: 10px; margin-top: 20px;">
+							<button class="btn" onclick="switchGradeTab('regular')" style="flex:1; background:#e3f2fd; color:#1565c0;">📝 記小考</button>
+							<button class="btn" onclick="switchGradeTab('midterm')" style="flex:1; background:#fff8e1; color:#f57f17;">🏆 記段考</button>
+							<button class="btn" onclick="switchGradeTab('list')" style="flex:1; background:#e8f5e9; color:#2e7d32;">📊 算 GPA</button>
+						</div>
+					</div>
+				</div>
+
+				<div id="subview-grade-regular" style="display: none;">
+					<div class="card">
+						<h2>
+							<span>📝 平常考成績</span>
+							<select id="regular-subject-select"
+								style="font-size: 0.9rem; padding: 4px 8px; border: 1px solid #ddd; border-radius: 6px;">
+								<option value="" disabled selected>選擇科目</option>
+							</select>
+						</h2>
+						<table id="regular-exam-table">
+							<thead>
+								<tr>
+									<th width="60%">測驗內容</th>
+									<th width="40%">分數</th>
+								</tr>
+							</thead>
+							<tbody id="regular-exam-body">
+								<tr>
+									<td colspan="2" class="no-class">👈 請先選擇科目</td>
+								</tr>
+							</tbody>
+						</table>
+						<button class="btn btn-add" onclick="openRegularModal()">+ 登記平常考</button>
+					</div>
+				</div>
+
+				<div id="subview-grade-midterm" style="display: none;">
+					<div class="card">
+						<h2>
+							<span>🏆 段考成績</span>
+							<select id="midterm-subject-select" style="font-size: 0.9rem; padding: 4px 8px; border: 1px solid #ddd; border-radius: 6px;">
+								<option value="" disabled selected>選擇科目</option>
+							</select>
+						</h2>
+						<table id="midterm-exam-table">
+							<thead>
+								<tr>
+									<th width="60%">段考名稱</th>
+									<th width="40%">分數</th>
+								</tr>
+							</thead>
+							<tbody id="midterm-exam-body">
+								<tr>
+									<td colspan="2" class="no-class">👈 請先選擇科目</td>
+								</tr>
+							</tbody>
+						</table>
+						<button class="btn btn-add" onclick="openMidtermModal()">+ 登記段考</button>
+					</div>
+				</div>
+
+				<div id="subview-grade-list" style="display: none;">
+					<div class="card">
+						<h2>📊 學期成績單</h2>
+						<table id="grade-table">
+							<thead>
+								<tr>
+									<th>科目</th>
+									<th class="uni-only">學分</th>
+									<th class="uni-only">實得</th>
+									<th>分數</th>
+								</tr>
+							</thead>
+							<tbody id="grade-body"></tbody>
+						</table>
+						<div style="margin-top: 15px; text-align: right; font-weight: bold; color: var(--primary);">
+							<span id="average-score" style="font-size: 1.1rem;">0.0</span>
+						</div>
+						<button class="btn btn-add" onclick="openGradeModal()">+ 編輯成績</button>
+					</div>
+				</div>
+
+				<div id="subview-grade-chart" style="display: none;">
+					<div class="card" style="height: 70vh; display: flex; flex-direction: column;">
+						<h2>📈 歷年成績趨勢</h2>
+						<div style="flex: 1; position: relative; min-height: 300px;">
+							<canvas id="gradeChart"></canvas>
+						</div>
+					</div>
+				</div>
+
+				<div id="subview-grade-credits" style="display: none;">
+					<div class="card">
+						<h2>🎓 畢業學分與模組進度</h2>
+
+						<div id="credit-progress-container" style="margin-top: 10px;">
+							<h4 style="margin-bottom: 8px; display:flex; justify-content:space-between; font-size:1rem; color:#555;">
+								<span>畢業門檻達成率</span>
+								<span>
+									<span id="total-credits" style="color:var(--primary); font-weight:bold;">0</span> /
+									<span id="target-credits">128</span>
+								</span>
+							</h4>
+							<div style="background: #eee; border-radius: 10px; height: 16px; width: 100%; overflow: hidden; margin-bottom: 5px;">
+								<div id="credit-progress-bar" style="background: var(--primary); width: 0%; height: 100%; transition: width 0.8s ease-in-out;"> </div>
+							</div>
+							<p style="font-size: 0.85rem; color: #999; text-align: right; margin-bottom: 25px;">(目標可至「個人設定」頁面修改)</p>
+							<hr style="border: 0; border-top: 1px dashed #ddd; margin-bottom: 20px;">
+
+							<div id="panel-credits-uni" style="display: none;">
+								<h4 style="color: #666; font-size: 1rem; margin-bottom: 15px;">📊 各模組詳細狀態 (大學)</h4>
+								<div id="list-credits-uni"></div>
+							</div>
+
+							<div id="panel-credits-hs" style="display: none;">
+								<h4 style="color: #666; font-size: 1rem; margin-bottom: 15px;">📊 必修與選修狀態 (高中)</h4>
+								<div id="list-credits-hs"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- maney頁頁面 -->
+			<div id="view-accounting" style="display: none;">
+				<div class="week-tabs" style="margin-bottom: 20px;">
+					<button class="tab-btn active" onclick="switchAccTab('summary')" id="btn-acc-summary">📊 摘要</button>
+					<button class="tab-btn" onclick="switchAccTab('details')" id="btn-acc-details">📝 明細</button>
+					<button class="tab-btn" onclick="switchAccTab('chart')" id="btn-acc-chart">📈 月報表</button>
+					<button class="tab-btn" onclick="switchAccTab('daily')" id="btn-acc-daily">📅 日統計</button>
+					<button class="tab-btn" onclick="switchAccTab('accounts')" id="btn-acc-accounts">💳 帳戶</button>
+				</div>
+				<div id="view-acc-summary" style="display: block;">
+					<div class="card" style="text-align: center; padding: 40px 20px;">
+						<h2 style="justify-content: center; border:none; margin-bottom: 30px;">💰 本學期收支總覽</h2>
+						<div style="display: flex; justify-content: space-around; margin-bottom: 30px;">
+							<div style="flex: 1;">
+								<div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">總收入</div>
+								<div id="acc-summary-income" style="font-size: 1.8rem; font-weight: bold; color: #2ecc71;">$0</div>
+							</div>
+							<div style="flex: 1; border-left: 1px solid #eee; border-right: 1px solid #eee;">
+								<div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">總支出</div>
+								<div id="acc-summary-expense" style="font-size: 1.8rem; font-weight: bold; color: #e74c3c;">$0</div>
+							</div>
+							<div style="flex: 1;">
+								<div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">結餘</div>
+								<div id="acc-summary-balance" style="font-size: 1.8rem; font-weight: bold; color: #333;">$0</div>
+							</div>
+						</div>
+						<button class="btn btn-add" onclick="openAccountingModal()" style="font-size: 1.1rem; padding: 15px;">+ 記一筆</button>
+					</div>
+				</div>
+				<div id="view-acc-details" style="display: none;">
+					<div class="card">
+						<h2>📝 收支明細列表</h2>
+						<table id="accounting-table">
+							<thead>
+								<tr>
+									<th width="20%">日期</th>
+									<th width="20%">項目</th>
+									<th width="20%">支付方式</th>
+									<th width="20%">金額</th>
+									<th width="20%">更改/刪除</th>
+								</tr>
+							</thead>
+							<tbody id="accounting-list-body"></tbody>
+						</table>
+						<button class="btn btn-add" onclick="openAccountingModal()">+ 新增紀錄</button>
+					</div>
+				</div>
+				<div id="view-acc-chart" style="display: none;">
+					<div class="card" style="height: 70vh; display: flex; flex-direction: column;">
+						<h2>📈 每月收支趨勢</h2>
+						<div style="flex: 1; position: relative; min-height: 300px;">
+							<canvas id="accountingChart"></canvas>
+						</div>
+						<p style="text-align: center; color: #999; font-size: 0.8rem; margin-top: 10px;">(柱狀圖：收入/支出 | 折線圖：結餘)</p>
+					</div>
+				</div>
+				<div id="view-acc-daily" style="display: none;">
+					<div class="card">
+						<h2>📅 每日總收支統計</h2>
+						<table class="daily-table">
+							<thead>
+								<tr>
+									<th>日期</th>
+									<th style="color:#2ecc71;">總收入</th>
+									<th style="color:#e74c3c;">總支出</th>
+									<th>淨收支</th>
+								</tr>
+							</thead>
+							<tbody id="daily-acc-body"></tbody>
+						</table>
+					</div>
+				</div>
+				<div id="view-acc-accounts" style="display: none;">
+					<div class="card">
+						<h2>💳 帳戶餘額概況</h2>
+						<div id="acc-accounts-list"> </div>
+						<button class="btn btn-add" onclick="addPaymentMethod()">+ 新增支付方式</button>
+					</div>
+				</div>
+			</div>
+			<!-- 記事本頁面 -->
+			<div id="view-notes" style="display: none;">
+				<div class="card">
+					<h2>📝 快述記事本</h2>
+					<div id="notes-list" style="min-height: 200px;"> </div>
+					<button class="btn btn-add" onclick="openNoteModal()">+ 新增記事</button>
+				</div>
+			</div>
+			<!-- 重要日期紀錄頁面 -->
+			<div id="view-anniversary" style="display: none;">
+				<div class="card">
+					<h2>💝 紀念日 & 倒數</h2>
+					<div id="anniversary-list" style="min-height: 200px;"> </div>
+					<button class="btn btn-add" onclick="openAnniversaryModal()">+ 新增紀念日</button>
+				</div>
+			</div>
+			<!-- 讀書計畫頁面 -->
+			<div id="view-learning" style="display: none;">
+				<div class="card">
+					<h2>📚 本學期讀書計畫</h2>
+					<div id="learning-list" style="min-height: 200px;"> </div>
+					<button class="btn btn-add" onclick="openLearningModal()">+ 新增目標</button>
+				</div>
+			</div>
+			<!-- APP資訊頁頁面 -->
+			
+			<div id="view-info" style="display: none;">
+				<div class="card">
+					<h2>🚀 校園王 App 功能總覽 (v6.0)</h2>
+					<div style="background: #fff3e0; color: #e67e22; padding: 12px; border-radius: 8px; margin: 15px 0; font-size: 0.9rem; border-left: 4px solid #e67e22;">
+						<strong>💡 Web OS 架構：</strong><br>
+						本系統採用「類手機桌面」設計，所有功能皆獨立為 App，點擊圖示即可開啟，並支援深色模式切換。
+					</div>
+					<div style="margin-bottom: 20px;">
+						<h4 style="color: var(--primary); border-bottom: 1px dashed #ddd; padding-bottom: 5px; margin-bottom: 10px;">📅 課表</h4>
+						<ul style="padding-left: 20px; color: var(--text-sub); font-size: 0.95rem; line-height: 1.6;">
+							<li><strong>智慧排課：</strong>支援輸入「1-3」自動建立三堂連堂課程。</li>
+							<li><strong>自動合併：</strong>週課表中，相同的連堂課程會自動跨欄置中顯示。</li>
+							<li><strong>圖片匯出：</strong>點擊「📷 存成圖片」，一鍵下載高畫質週課表。</li>
+							<li><strong>上課提醒：</strong>上課前 10 分鐘發送瀏覽器推播通知 (需開啟權限)。</li>
+							<li><strong>單日/週檢視：</strong>支援「本日課程」清單與「完整週課表」切換。</li>
+						</ul>
+					</div>
+					<div style="margin-bottom: 20px;">
+						<h4 style="color: var(--primary); border-bottom: 1px dashed #ddd; padding-bottom: 5px; margin-bottom: 10px;">🗓️ 行事曆</h4>
+						<ul style="padding-left: 20px; color: var(--text-sub); font-size: 0.95rem; line-height: 1.6;">
+							<li><strong>月曆視圖：</strong>提供視覺化月曆，可快速切換月份。</li>
+							<li><strong>週次顯示：</strong>標題列自動顯示該月份對應的「學期週次」(需先設定開學日)。</li>
+							<li><strong>活動清單：</strong>依時間排序顯示本學期所有重要日程。</li>
+						</ul>
+					</div>
+					<div style="margin-bottom: 20px;">
+						<h4 style="color: var(--primary); border-bottom: 1px dashed #ddd; padding-bottom: 5px; margin-bottom: 10px;">💯 成績管理</h4>
+						<ul style="padding-left: 20px; color: var(--text-sub); font-size: 0.95rem; line-height: 1.6;">
+							<li><strong>多維度紀錄：</strong>支援「平常考 (小考)」、「段考」與「學期總成績」紀錄。</li>
+							<li><strong>智慧計算：</strong>
+								<ul>
+									<li>自動計算 **學分加權平均 (GPA)**。</li>
+									<li>即時統計「實得學分」。</li>
+								</ul>
+							</li>
+							<li><strong>雙身分制：</strong>大學部支援通識/專業模組分類；高中部支援必/選修統計。</li>
+							<li><strong>圖表分析：</strong>
+								<ul>
+									<li><strong>趨勢圖：</strong>折線圖顯示歷年成績起伏，並標示 60/80 分參考線。</li>
+									<li><strong>進度條：</strong>視覺化顯示「畢業學分門檻」達成率。</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+					<div style="margin-bottom: 20px;">
+						<h4 style="color: var(--primary); border-bottom: 1px dashed #ddd; padding-bottom: 5px; margin-bottom: 10px;">💰 學期記帳</h4>
+						<ul style="padding-left: 20px; color: var(--text-sub); font-size: 0.95rem; line-height: 1.6;">
+							<li><strong>收支紀錄：</strong>快速紀錄每日收入與支出。</li>
+							<li><strong>即時結餘：</strong>首頁儀表板顯示本學期總收支與淨額。</li>
+							<li><strong>多帳戶管理：</strong>可新增多種支付方式 (如 LINE Pay、銀行)，並追蹤各帳戶餘額。</li>
+							<li><strong>圖表報表：</strong>
+								<ul>
+									<li><strong>月報表：</strong>長條圖比較每月收支狀況。</li>
+									<li><strong>日統計：</strong>詳細列出每日的總花費。</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+					<div style="margin-bottom: 20px;">
+						<h4 style="color: var(--primary); border-bottom: 1px dashed #ddd; padding-bottom: 5px; margin-bottom: 10px;">💬 校園討論區</h4>
+						<ul style="padding-left: 20px; color: var(--text-sub); font-size: 0.95rem; line-height: 1.6;">
+							<li><strong>即時討論：</strong>無需重新整理，新貼文與留言即時顯示。</li>
+							<li><strong>回覆功能：</strong>支援針對特定貼文進行留言互動，串連討論脈絡。</li>
+							<li><strong>表情符號：</strong>內建 Emoji 選單，讓互動更有趣、更生動 😀。</li>
+							<li><strong>匿名發文：</strong>可選擇隱藏身分發言，暢所欲言更自在。</li>
+						</ul>
+					</div>
+					<div style="margin-bottom: 20px;">
+						<h4 style="color: var(--primary); border-bottom: 1px dashed #ddd; padding-bottom: 5px; margin-bottom: 10px;">🛠️ 生活工具</h4>
+						<ul style="padding-left: 20px; color: var(--text-sub); font-size: 0.95rem; line-height: 1.6;">
+							<li><strong>📝 快述記事：</strong>隨手紀錄備忘錄、待辦事項，支援時間戳記。</li>
+							<li><strong>💝 紀念日：</strong>紀錄重要日子 (如生日、交往紀念)，自動計算「還有幾天」或「已過去幾天」。</li>
+							<li><strong>🎰 幸運籤筒：</strong>選擇困難症救星，自訂選項幫你決定午餐吃什麼。</li>
+						</ul>
+					</div>
+					<div style="margin-bottom: 20px;">
+						<h4 style="color: var(--primary); border-bottom: 1px dashed #ddd; padding-bottom: 5px; margin-bottom: 10px;">📚 學習進度</h4>
+						<ul style="padding-left: 20px; color: var(--text-sub); font-size: 0.95rem; line-height: 1.6;">
+							<li><strong>讀書計畫：</strong>自訂科目與目標 (例如：頁數、章節)。</li>
+							<li><strong>進度追蹤：</strong>視覺化進度條，自動計算完成百分比。</li>
+							<li><strong>狀態燈號：</strong>進度落後顯示紅色，完成顯示綠色。</li>
+						</ul>
+					</div>
+					<div style="margin-bottom: 0;">
+						<h4 style="color: var(--primary); border-bottom: 1px dashed #ddd; padding-bottom: 5px; margin-bottom: 10px;">⚙️ 設定與系統</h4>
+						<ul style="padding-left: 20px; color: var(--text-sub); font-size: 0.95rem; line-height: 1.6;">
+							<li><strong>雙身分核心：</strong>支援「高中生 / 大學生」模式切換，自動調整學分結構。</li>
+							<li><strong>學期進度：</strong>設定「開學日」與「結束日」，系統自動計算目前週次與倒數天數。</li>
+							<li><strong>多學期檔案：</strong>支援建立無限多個學期 (如 113-1, 113-2)，舊資料自動封存。</li>
+							<li><strong>雲端同步：</strong>整合 Firebase，登入帳號後資料自動加密備份至雲端，換手機也不怕。</li>
+							<li><strong>深色模式：</strong>支援一鍵切換 Dark Mode 風格。</li>
+							<li><strong>帳號管理：</strong>支援密碼重設與帳號永久註銷功能。</li>
+						</ul>
+					</div>
+					<hr style="border:0; border-top:1px solid var(--border); margin:25px 0;">
+					<div style="text-align: center;">
+						<p></p>
+						<a href="https://forms.gle/455SvDGUERWmhU5e7" target="_blank">回饋表單</a>
+					</div>
+					<div style="text-align: center;">
+						<p style="font-size:0.85rem; color: var(--text-sub);">
+							Designed & Produced by<br>
+							<strong>Huang Zhaohong</strong>
+						</p>
+					</div>
+				</div>
+				<!-- <div class="card">
+					<h2>🚀 校園王 App 功能總覽 (v5.9.1)</h2>
+					<div style="background: #fff3e0; color: #e67e22; padding: 12px; border-radius: 8px; margin: 15px 0; font-size: 0.9rem; border-left: 4px solid #e67e22;">
+						<strong>💡 Web OS 架構：</strong><br>
+						本系統採用「類手機桌面」設計，所有功能皆獨立為 App，點擊圖示即可開啟，並支援深色模式切換。
+					</div>
+					<div style="margin-bottom: 20px;">
+						<h4 style="color: var(--primary); border-bottom: 1px dashed #ddd; padding-bottom: 5px; margin-bottom: 10px;">📅 課表</h4>
+						<ul style="padding-left: 20px; color: var(--text-sub); font-size: 0.95rem; line-height: 1.6;">
+							<li><strong>智慧排課：</strong>支援輸入「1-3」自動建立三堂連堂課程。</li>
+							<li><strong>自動合併：</strong>週課表中，相同的連堂課程會自動跨欄置中顯示。</li>
+							<li><strong>圖片匯出：</strong>點擊「📷 存成圖片」，一鍵下載高畫質週課表。</li>
+							<li><strong>上課提醒：</strong>上課前 10 分鐘發送瀏覽器推播通知 (需開啟權限)。</li>
+							<li><strong>單日/週檢視：</strong>支援「本日課程」清單與「完整週課表」切換。</li>
+						</ul>
+					</div>
+					<div style="margin-bottom: 20px;">
+						<h4 style="color: var(--primary); border-bottom: 1px dashed #ddd; padding-bottom: 5px; margin-bottom: 10px;">🗓️ 行事曆</h4>
+						<ul style="padding-left: 20px; color: var(--text-sub); font-size: 0.95rem; line-height: 1.6;">
+							<li><strong>月曆視圖：</strong>提供視覺化月曆，可快速切換月份。</li>
+							<li><strong>活動標記：</strong>有活動的日期下方會出現紅點 🔴 提示。</li>
+							<li><strong>週次顯示：</strong>標題列自動顯示該月份對應的「學期週次」(需先設定開學日)。</li>
+							<li><strong>活動清單：</strong>依時間排序顯示本學期所有重要日程。</li>
+						</ul>
+					</div>
+					<div style="margin-bottom: 20px;">
+						<h4 style="color: var(--primary); border-bottom: 1px dashed #ddd; padding-bottom: 5px; margin-bottom: 10px;">💯 成績管理</h4>
+						<ul style="padding-left: 20px; color: var(--text-sub); font-size: 0.95rem; line-height: 1.6;">
+							<li><strong>多維度紀錄：</strong>支援「平常考 (小考)」、「段考」與「學期總成績」紀錄。</li>
+							<li><strong>智慧計算：</strong>
+								<ul>
+									<li>自動計算 **學分加權平均 (GPA)**。</li>
+									<li>即時統計「實得學分」。</li>
+								</ul>
+							</li>
+							<li><strong>雙身分制：</strong>大學部支援通識/專業模組分類；高中部支援必/選修統計。</li>
+							<li><strong>圖表分析：</strong>
+								<ul>
+									<li><strong>趨勢圖：</strong>折線圖顯示歷年成績起伏，並標示 60/80 分參考線。</li>
+									<li><strong>進度條：</strong>視覺化顯示「畢業學分門檻」達成率。</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+					<div style="margin-bottom: 20px;">
+						<h4 style="color: var(--primary); border-bottom: 1px dashed #ddd; padding-bottom: 5px; margin-bottom: 10px;">💰 學期記帳</h4>
+						<ul style="padding-left: 20px; color: var(--text-sub); font-size: 0.95rem; line-height: 1.6;">
+							<li><strong>收支紀錄：</strong>快速紀錄每日收入與支出。</li>
+							<li><strong>即時結餘：</strong>首頁儀表板顯示本學期總收支與淨額。</li>
+							<li><strong>多帳戶管理：</strong>可新增多種支付方式 (如 LINE Pay、銀行)，並追蹤各帳戶餘額。</li>
+							<li><strong>圖表報表：</strong>
+								<ul>
+									<li><strong>月報表：</strong>長條圖比較每月收支狀況。</li>
+									<li><strong>日統計：</strong>詳細列出每日的總花費。</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+					<div style="margin-bottom: 20px;">
+						<h4 style="color: var(--primary); border-bottom: 1px dashed #ddd; padding-bottom: 5px; margin-bottom: 10px;">🛠️ 生活工具</h4>
+						<ul style="padding-left: 20px; color: var(--text-sub); font-size: 0.95rem; line-height: 1.6;">
+							<li><strong>📝 快述記事：</strong>隨手紀錄備忘錄、待辦事項，支援時間戳記。</li>
+							<li><strong>💝 紀念日：</strong>紀錄重要日子 (如生日、交往紀念)，自動計算「還有幾天」或「已過去幾天」。</li>
+						</ul>
+					</div>
+					<div style="margin-bottom: 20px;">
+						<h4 style="color: var(--primary); border-bottom: 1px dashed #ddd; padding-bottom: 5px; margin-bottom: 10px;">📚 學習進度</h4>
+						<ul style="padding-left: 20px; color: var(--text-sub); font-size: 0.95rem; line-height: 1.6;">
+							<li><strong>讀書計畫：</strong>自訂科目與目標 (例如：頁數、章節)。</li>
+							<li><strong>進度追蹤：</strong>視覺化進度條，自動計算完成百分比。</li>
+							<li><strong>狀態燈號：</strong>進度落後顯示紅色，完成顯示綠色。</li>
+						</ul>
+					</div>
+					<div style="margin-bottom: 0;">
+						<h4 style="color: var(--primary); border-bottom: 1px dashed #ddd; padding-bottom: 5px; margin-bottom: 10px;">⚙️ 設定與系統</h4>
+						<ul style="padding-left: 20px; color: var(--text-sub); font-size: 0.95rem; line-height: 1.6;">
+							<li><strong>雙身分核心：</strong>支援「高中生 / 大學生」模式切換，自動調整學分結構。</li>
+							<li><strong>學期進度：</strong>設定「開學日」與「結束日」，系統自動計算目前週次與倒數天數。</li>
+							<li><strong>多學期檔案：</strong>支援建立無限多個學期 (如 113-1, 113-2)，舊資料自動封存。</li>
+							<li><strong>雲端同步：</strong>整合 Firebase，登入帳號後資料自動加密備份至雲端，換手機也不怕。</li>
+							<li><strong>深色模式：</strong>支援一鍵切換 Dark Mode 風格。</li>
+							<li><strong>帳號管理：</strong>支援密碼重設與帳號永久註銷功能。</li>
+						</ul>
+					</div>
+					<hr style="border:0; border-top:1px solid var(--border); margin:25px 0;">
+					<div style="text-align: center;">
+						<p></p>
+						<a href="https://forms.gle/455SvDGUERWmhU5e7">回饋表單</a>
+					</div>
+					<div style="text-align: center;">
+						<p style="font-size:0.85rem; color: var(--text-sub);">
+							Designed & Produced by<br>
+							<strong>Huang Zhaohong</strong>
+						</p>
+					</div>
+				</div>-->
+			</div> 
+			<!-- 討論版頁面 -->
+			<div id="view-discussion" style="display: none;">
+				<div class="card">
+					<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+						<h2 style="border:none; margin:0;">💬 校園討論板</h2>
+						<button class="btn" onclick="openPostModal()" style="width:auto; padding:8px 15px;">+ 發文</button>
+					</div>
+					<div id="discussion-list" style="padding-bottom: 20px;"> </div>
+				</div>
+			</div>
+			<!-- 通知設定頁面 -->
+			<div id="view-notifications" style="display: none;">
+				<div class="card">
+					<h2>🔔 通知設定</h2>
+					<div class="settings-list" id="notification-settings-list"> </div>
+					
+					<div style="margin-top: 25px; padding: 15px; background: #fff8e1; border-radius: 8px; border-left: 4px solid #ffc107; font-size: 0.9rem; color: #666; line-height: 1.6;">
+						<strong>💡 小提示：</strong>
+						<ul style="margin: 5px 0 0 0; padding-left: 20px;">
+							<li>通知功能需要瀏覽器權限，若收不到請檢查手機設定。</li>
+							<li><strong>晨間快報</strong>會在早上 7:00 左右發送。</li>
+							<li><strong>課前提醒</strong>會在上課前 10 分鐘發送。</li>
+						</ul>
+					</div>
+
+					<button class="btn" onclick="requestNotificationPermission()" style="width: 100%; margin-top: 20px; background: #555;">📢 測試 / 重新請求權限</button>
+					<button class="btn" onclick="switchTab('home')" style="width: 100%; margin-top: 10px; background: transparent; color: #888; border: 1px solid #ddd;">回桌面</button>
+				</div>
+			</div>
+			<!-- 設定頁頁面 -->
+			<div id="view-settings" style="display: none;">
+				<div class="card">
+					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #f4f7f6;">
+						<h2 style="margin: 0; border: none; padding: 0;">📅 學期期間設定</h2>
+						<button id="btn-edit-semester-dates" class="btn" style="background: #666; padding: 6px 12px; font-size: 0.9rem; width: auto;" onclick="toggleSemesterEdit()">  ✏️ 修改  </button>
+					</div>
+
+					<div id="semester-date-view-mode">
+						<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border);">
+							<span style="color:var(--text-sub);">學期開始</span>
+							<span id="text-sem-start" style="font-weight:bold; color:var(--text-main);">未設定</span>
+						</div>
+						<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); margin-bottom:15px;">
+							<span style="color:var(--text-sub);">學期結束</span>
+							<span id="text-sem-end" style="font-weight:bold; color:var(--text-main);">未設定</span>
+						</div>
+					</div>
+
+					<div id="semester-date-edit-mode" style="display: none;">
+						<div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+							<div class="input-group">
+								<label>學期開始日 (第 1 週)</label>
+								<input type="date" id="setting-sem-start" style="background:white;">
+							</div>
+							<div class="input-group" style="margin-bottom:0;">
+								<label>學期結束日</label>
+								<input type="date" id="setting-sem-end" style="background:white;">
+							</div>
+						</div>
+						<div style="display: flex; gap: 10px; margin-bottom: 15px;">
+							<button class="btn" onclick="saveSemesterDates()" style="flex: 2; background: var(--primary);">💾 儲存</button>
+							<button class="btn" onclick="toggleSemesterEdit()" style="flex: 1; background: transparent; color: #888; border: 1px solid #ddd;">取消</button>
+						</div>
+					</div>
+
+					<div id="semester-status-text" style="text-align: center; color: var(--primary); font-weight: bold; font-size: 0.9rem;"> </div>
+				</div>
+				<div class="card">
+					<h2>⚙️ 一般設定</h2>
+					<div class="settings-list">
+						<div class="settings-item" onclick="editUserTitle()">
+							<div><span class="settings-icon">🏷️</span>顯示名稱 / 稱號</div>
+							<span id="setting-user-title" class="settings-arrow">同學</span>
+						</div>
+						<div class="settings-item" onclick="editTimeSettings()">
+							<div><span class="settings-icon">⏰</span>設定課堂時長 (上課/下課)</div>
+							<span class="settings-arrow">➤</span>
+						</div>
+						<div class="settings-item" onclick="resetIdentity()">
+							<div><span class="settings-icon">🪪</span>切換身分 (高中/大學)</div>
+							<span class="settings-arrow">➤</span>
+						</div>
+						<div class="settings-item" onclick="toggleTheme()">
+							<div><span class="settings-icon">🌙</span>深色模式</div>
+							<span id="theme-status" class="settings-arrow" style="font-size: 0.8rem; font-weight: bold;">OFF</span>
+						</div>
+					</div>
+				</div>
+				<div class="card">
+					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #f4f7f6;">
+						<h2 style="margin: 0; border: none; padding: 0;">📏 學分標準設定</h2>
+						<button id="btn-edit-credits" class="btn" style="background: #666; padding: 6px 12px; font-size: 0.9rem; width: auto;" onclick="toggleCreditEdit()"> ✏️ 修改 </button>
+					</div>
+					<div id="credits-view-mode">
+						<div id="view-grad-target" style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border);">
+							<span>🏁 畢業總學分</span>
+							<span id="text-grad-target" style="font-weight:bold; color:var(--primary);">128</span>
+						</div>
+						<div id="view-settings-uni" style="display: none;"></div>
+						<div id="view-settings-hs" style="display: none;"></div>
+					</div>
+					<div id="credits-edit-mode" style="display: none;">
+						<div style="margin-bottom: 15px; background: #f9f9f9; padding: 10px; border-radius: 8px;">
+							<label style="display:block; color:#555; font-weight:bold; font-size:0.9rem; margin-bottom:5px;">畢業總學分目標</label>
+							<input type="number" id="edit-grad-target" class="login-input" style="text-align:center; margin-bottom:0;">
+						</div>
+						<h5 style="margin: 15px 0 10px 0; color: #666; border-left: 4px solid var(--primary); padding-left: 8px;"> 詳細目標設定</h5>
+						<div id="edit-settings-uni" style="display: none;"></div>
+						<div id="edit-settings-hs" style="display: none;"></div>
+						<div style="display: flex; gap: 10px; margin-top: 20px;">
+							<button class="btn" onclick="saveCreditSettings()" style="flex: 2; background: var(--primary);">💾 儲存</button>
+							<button class="btn" onclick="toggleCreditEdit()" style="flex: 1; background: transparent; color: #888; border: 1px solid #ddd;">取消</button>
+						</div>
+					</div>
+				</div>
+				<div class="card">
+					<h2 style="color: var(--danger); border-bottom-color: #fff0f0;">🛡️ 帳號管理</h2>
+					<div class="settings-list">
+						<div class="settings-item" onclick="logout()" style="color: var(--danger);">
+							<div><span class="settings-icon">🚪</span>登出帳號</div>
+						</div>
+					</div>
+					<div class="settings-item" onclick="deleteAccount()" style="color: #e74c3c; border-top: 1px dashed #eee;">
+						<div><span class="settings-icon">💀</span>註銷帳號 (永久刪除)</div>
+						<span class="settings-arrow">➤</span>
+					</div>
+				</div>
+			</div>
+		</main>
+	</div>
+	<!-- 登入頁面 -->
+	<div id="login-overlay">
+		<div class="login-card">
+			<h1 style="margin-top:0;">🎓 歡迎使用校園王</h1>
+			<div id="email-form">
+				<input type="email" id="email" class="login-input" placeholder="電子信箱 (Email)">
+				<input type="password" id="password" class="login-input" placeholder="密碼 (至少6位數)">
+				<div style="text-align: right; margin-bottom: 15px; margin-top: -5px;">
+					<span class="text-link" onclick="forgotPassword()" tyle="font-size: 0.85rem; color: #888;">忘記密碼？</span>
+				</div>
+				<button class="btn-primary" onclick="handleEmailAuth()" id="btn-submit">登入</button>
+				<p style="font-size: 0.9rem; color: #666;">
+					<span id="toggle-text">還沒有帳號？</span>
+					<span class="text-link" onclick="toggleLoginMode()" id="toggle-btn">建立新帳號</span>
+				</p>
+			</div>
+			<div class="divider">或使用其他方式</div>
+			<button class="btn-google" onclick="loginWithGoogle()" style="margin-top:0;">
+				<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google 登入
+			</button>
+			<button class="btn-anon" onclick="loginAnonymously()">👻 匿名試用</button>
+		</div>
+	</div>
+	<!-- 詢問身分區塊 -->
+	<div id="welcome-modal" class="modal">
+		<div class="modal-content">
+			<h3>🎓 歡迎使用</h3>
+			<p>請問您的身分是？</p>
+			<button class="modal-btn" onclick="setUserType('highschool')">我是高中生</button>
+			<button class="modal-btn" onclick="setUserType('university')">我是大學生</button>
+		</div>
+	</div>
+	<!-- 週課表區塊 -->
+	<div id="schedule-modal" class="modal">
+		<div class="modal-content" style="width: 95%; max-width: 800px; height: 90vh; overflow-y: auto;">
+			<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+				<h3 style="margin:0;">📅 我的週課表</h3>
+				<div style="display:flex; gap:10px;">
+					<button class="btn-sm" onclick="exportScheduleImage()">📷 截圖</button>
+					<button class="btn-sm" onclick="closeScheduleModal()" style="background:#888;">關閉</button>
+				</div>
+			</div>
+
+			<div class="table-container">
+				<table id="course-table">
+					<thead>
+						<tr>
+							<th>節</th>
+							<th>一</th>
+							<th>二</th>
+							<th>三</th>
+							<th>四</th>
+							<th>五</th>
+							<th>六</th>
+							<th>日</th>
+						</tr>
+					</thead>
+					<tbody id="weekly-schedule-body">
+					</tbody>
+				</table>
+			</div>
+			<p style="text-align: center; color: #888; font-size: 0.9rem; margin-top: 10px;">點擊格子可編輯課程</p>
+		</div>
+	</div>
+
+
+	<!-- 以下是編輯資料區塊 -->
+	<div id="course-modal" class="modal">
+		<div class="modal-content" style="text-align: left;">
+			<h3 style="text-align: center; margin-top:0;">✏️ 編輯課程</h3>
+			<div id="current-course-list" style="margin-bottom: 20px; max-height: 150px; overflow-y: auto;"></div>
+			<hr style="border:0; border-top:1px dashed #ddd; margin: 15px 0;">
+			<h4 style="margin: 0 0 10px 0; color: var(--primary);">新增一堂課</h4>
+			<div class="input-group">
+				<label>節次區間 (起始 - 結束)</label>
+				<div style="display: flex; gap: 10px; align-items: center;">
+					<input type="text" id="input-period-start" class="login-input" placeholder="起始 (如: 1)" style="flex: 1; margin-bottom: 0; text-align: center;">
+					<span style="color: #999; font-weight: bold;">至</span>
+					<input type="text" id="input-period-end" class="login-input" placeholder="結束 (如: 3)" style="flex: 1; margin-bottom: 0; text-align: center;">
+				</div>
+				<div style="font-size: 0.8rem; color: #999; margin-top: 4px;">※ 若只有一節課，右邊免填</div>
+			</div>
+			<div class="input-group">
+				<label>時間 (如: 08:10)</label>
+				<input type="text" id="input-time" placeholder="輸入時間...">
+			</div>
+			<div class="input-group">
+				<label>課程歸類 & 修別</label>
+				<div style="display: flex; gap: 8px;">
+					<select id="input-course-category" style="flex: 2; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+						<option value="通識">通識教育課程</option>
+						<option value="院共同">院共同課程</option>
+						<option value="基礎">基礎模組</option>
+						<option value="核心">核心模組</option>
+						<option value="專業">專業模組</option>
+						<option value="自由">自由選修</option>
+						<option value="其他">其他</option>
+					</select>
+					<select id="input-course-nature" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+						<option value="必修">必修</option>
+						<option value="選修">選修</option>
+						<option value="必選修">必選修</option>
+					</select>
+				</div>
+			</div>
+			<div class="input-group">
+				<label>科目</label>
+				<input type="text" id="input-subject" placeholder="輸入科目...">
+			</div>
+			<div class="input-group">
+				<label>地點</label>
+				<input type="text" id="input-room" placeholder="輸入地點...">
+			</div>
+			<div class="input-group">
+				<label>老師</label>
+				<input type="text" id="input-teacher" placeholder="輸入老師...">
+			</div>
+			<button id="btn-add-course" class="btn" style="width: 100%; background: #333;" onclick="addCourse()">+ 加入清單</button>
+			<button class="btn" style="width: 100%; margin-top: 10px; background: transparent; color: #666; border: 1px solid #ddd;" onclick="closeEditModal()">關閉</button>
+		</div>
+	</div>
+	<div id="calendar-modal" class="modal">
+		<div class="modal-content" style="text-align: left;">
+			<h3 id="cal-modal-title" style="text-align: center; margin-top:0;">📅 新增活動</h3>
+			
+			<div class="input-group">
+				<label>日期區間</label>
+				<div style="display:flex; gap:10px;">
+					<div style="flex:1;">
+						<label style="font-size:0.8rem; color:#888; margin-bottom:2px;">起始日</label>
+						<input type="date" id="input-cal-date" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; margin-bottom:0;">
+					</div>
+					<div style="flex:1;">
+						<label style="font-size:0.8rem; color:#888; margin-bottom:2px;">結束日 (選填)</label>
+						<input type="date" id="input-cal-end-date" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; margin-bottom:0;">
+					</div>
+				</div>
+			</div>
+
+			<div class="input-group" style="margin-top: 15px;">
+				<label style="display:flex; align-items:center; cursor:pointer; margin-bottom: 8px;">
+					<input type="checkbox" id="input-cal-allday" checked onchange="toggleCalTimeInput()" style="width:auto; margin-right:8px; transform: scale(1.2);">
+					全天活動
+				</label>
+				
+				<div id="cal-time-inputs" style="display: none; gap: 10px;">
+					<div style="flex:1;">
+						<label style="font-size:0.8rem; margin-bottom:2px;">開始時間</label>
+						<input type="time" id="input-cal-start" class="login-input" style="background:white; margin-bottom:0;">
+					</div>
+					<div style="flex:1;">
+						<label style="font-size:0.8rem; margin-bottom:2px;">結束時間</label>
+						<input type="time" id="input-cal-end" class="login-input" style="background:white; margin-bottom:0;">
+					</div>
+				</div>
+			</div>
+
+			<div class="input-group">
+				<label>活動名稱</label>
+				<input type="text" id="input-cal-title" placeholder="例如：期末考週、畢業旅行...">
+			</div>
+			
+			<button id="btn-save-cal" class="btn" style="width: 100%; background: #333;" onclick="addCalendarEvent()">+ 加入</button>
+			
+			<button id="btn-del-cal" class="btn" style="width: 100%; margin-top: 10px; background: #ffebee; color: #e74c3c; border: 1px solid #e74c3c; display: none;" onclick="deleteCalendarEventFromModal()">🗑️ 刪除此活動</button>
+			
+			<button class="btn" style="width: 100%; margin-top: 10px; background: transparent; color: #666; border: 1px solid #ddd;" onclick="closeCalendarModal()">關閉</button>
+		</div>
+	</div>
+	<div id="regular-exam-modal" class="modal">
+		<div class="modal-content" style="text-align: left;">
+			<h3 style="text-align: center; margin-top:0;">📝 新增平常考</h3>
+			<p style="text-align: center; color: #666;">科目：
+				<span id="modal-regular-subject-name" style="font-weight: bold; color: var(--primary);"></span>
+			</p>
+			<div class="input-group">
+				<label>測驗名稱</label>
+				<input type="text" id="input-regular-name" placeholder="例如：第一次小考、Unit 1">
+			</div>
+			<div class="input-group">
+				<label>分數</label>
+				<input type="number" id="input-regular-score" placeholder="例如：85">
+			</div>
+			<button class="btn" style="width: 100%; background: #333;" onclick="addRegularExam()">+ 確定新增</button>
+			<button class="btn" style="width: 100%; margin-top: 10px; background: transparent; color: #666; border: 1px solid #ddd;" onclick="closeRegularModal()">關閉</button>
+		</div>
+	</div>
+	<div id="midterm-exam-modal" class="modal">
+		<div class="modal-content" style="text-align: left;">
+			<h3 style="text-align: center; margin-top:0;">🏆 新增段考</h3>
+			<p style="text-align: center; color: #666;">科目：
+				<span id="modal-midterm-subject-name" style="font-weight: bold; color: var(--primary);"></span>
+			</p>
+			<div class="input-group">
+				<label>段考名稱</label>
+				<input type="text" id="input-midterm-name" placeholder="例如：第一次段考、期中考">
+			</div>
+			<div class="input-group">
+				<label>分數</label>
+				<input type="number" id="input-midterm-score" placeholder="例如：88">
+			</div>
+			<button class="btn" style="width: 100%; background: #333;" onclick="addMidtermExam()">+ 確定新增</button>
+			<button class="btn" style="width: 100%; margin-top: 10px; background: transparent; color: #666; border: 1px solid #ddd;" onclick="closeMidtermModal()">關閉</button>
+		</div>
+	</div>
+	<div id="grade-modal" class="modal">
+		<div class="modal-content" style="text-align: left;">
+			<h3 style="text-align: center; margin-top:0;">📊 編輯成績</h3>
+			<div id="current-grade-list" style="margin-bottom: 20px; max-height: 150px; overflow-y: auto;"></div>
+			<hr style="border:0; border-top:1px dashed #ddd; margin: 15px 0;">
+			<h4 style="margin: 0 0 10px 0; color: var(--primary);">新增一科</h4>
+			<div class="input-group">
+				<label>科目名稱</label>
+				<div style="display: flex; gap: 8px;">
+					<select id="input-grade-subject-select" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
+						<option value="" disabled selected>請先選擇科目</option>
+					</select>
+					<input type="text" id="input-grade-subject-text" style="flex: 1; display: none;" placeholder="請輸入科目名稱...">
+					<button class="btn" id="btn-toggle-input" onclick="toggleGradeInputMode()" style="width: auto; padding: 8px 12px; background: #666;" title="切換輸入模式">✏️</button>
+				</div>
+			</div>
+			<div class="input-group">
+				<label>課程歸類 & 修別</label>
+				<div style="display: flex; gap: 8px;">
+					<select id="input-grade-category" style="flex: 2; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+						<option value="通識">通識教育課程</option>
+						<option value="院共同">院共同課程</option>
+						<option value="基礎">基礎模組</option>
+						<option value="核心">核心模組</option>
+						<option value="專業">專業模組</option>
+						<option value="自由">自由選修</option>
+						<option value="其他">其他</option>
+					</select>
+					<select id="input-grade-nature" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+						<option value="必修">必修</option>
+						<option value="選修">選修</option>
+						<option value="必選修">必選修</option>
+					</select>
+				</div>
+			</div>
+			<div class="input-group" id="input-credit-group">
+				<label>學分</label>
+				<input type="number" id="input-grade-credit" placeholder="例如：3" value="1">
+			</div>
+			<div class="input-group">
+				<label>分數</label>
+				<input type="number" id="input-grade-score" placeholder="例如：85">
+			</div>
+			<button id="btn-add-grade" class="btn" style="width: 100%; background: #333;" onclick="addGrade()">+ 加入成績單</button>
+			<button class="btn" style="width: 100%; margin-top: 10px; background: transparent; color: #666; border: 1px solid #ddd;" onclick="closeGradeModal()">關閉</button>
+		</div>
+	</div>
+	<div id="accounting-modal" class="modal">
+		<div class="modal-content" style="text-align: left;">
+			<h3 style="text-align: center; margin-top:0;">💰 新增收支紀錄</h3>
+
+			<div class="input-group">
+				<label>類型</label>
+				<select id="input-acc-type" class="login-input" style="background:white;" onchange="toggleAccType()">
+					<option value="expense">💸 支出</option>
+					<option value="income">💰 收入</option>
+					<option value="transfer">🔁 轉帳</option>
+				</select>
+			</div>
+
+			<div class="input-group">
+				<label>日期</label>
+				<input type="date" id="input-acc-date">
+			</div>
+
+			<div class="input-group">
+				<label>項目說明</label>
+				<input type="text" id="input-acc-title" placeholder="例如：早餐、薪水">
+			</div>
+
+			<div class="input-group">
+				<label>金額</label>
+				<input type="number" id="input-acc-amount" placeholder="例如：100">
+			</div>
+
+			<div class="input-group">
+				<label id="label-acc-method">支付方式</label>
+				<select id="input-acc-method" class="login-input" style="background:white;"> </select>
+			</div>
+
+			<div class="input-group" id="group-acc-to-method" style="display: none;">
+				<label>轉入帳戶 (存入)</label>
+				<select id="input-acc-to-method" class="login-input" style="background:white;"> </select>
+			</div>
+			<button id="btn-save-acc" class="btn" style="width: 100%; background: #333;" onclick="addTransaction()">+ 確定新增</button>
+			<button class="btn" style="width: 100%; margin-top: 10px; background: transparent; color: #666; border: 1px solid #ddd;" onclick="closeAccountingModal()">關閉</button>
+		</div>
+	</div>
+	<div id="note-modal" class="modal">
+		<div class="modal-content" style="text-align: left;">
+			<h3 style="text-align: center; margin-top:0;">✏️ 新增記事</h3>
+
+			<div class="input-group">
+				<textarea id="input-note-content" placeholder="在這裡寫下任何事情..." style="width: 100%; height: 120px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; resize: none; font-size: 1rem;"></textarea>
+			</div>
+
+			<button class="btn" style="width: 100%; background: #333;" onclick="addNote()">+ 儲存筆記</button>
+			<button class="btn" style="width: 100%; margin-top: 10px; background: transparent; color: #666; border: 1px solid #ddd;" onclick="closeNoteModal()">取消</button>
+		</div>
+	</div>
+	<div id="anniversary-modal" class="modal">
+		<div class="modal-content">
+			<h3 style="text-align: center; margin-top:0;">📅 新增紀念日</h3>
+
+			<div class="input-group">
+				<label>標題 (例如：交往、生日)</label>
+				<input type="text" id="input-anniv-title" class="login-input" placeholder="輸入標題...">
+			</div>
+
+			<div class="input-group">
+				<label>日期</label>
+				<input type="date" id="input-anniv-date" class="login-input">
+			</div>
+
+			<button class="btn" style="width: 100%; background: var(--primary);" onclick="addAnniversary()">+ 確定新增</button>
+			<button class="btn" style="width: 100%; margin-top: 10px; background: transparent; color: #666; border: 1px solid #ddd;" onclick="closeAnniversaryModal()">取消</button>
+		</div>
+	</div>
+	<div id="learning-modal" class="modal">
+		<div class="modal-content" style="text-align: left;">
+			<h3 style="text-align: center;">📚 設定目標</h3>
+			<div class="input-group"><label>科目</label><input type="text" id="input-learn-subject"></div>
+			<div class="input-group"><label>內容</label><input type="text" id="input-learn-content"></div>
+			<div style="display:flex; gap:10px;">
+				<div class="input-group"><label>目前</label><input type="number" id="input-learn-current" value="0"></div>
+				<div class="input-group"><label>目標</label><input type="number" id="input-learn-total"></div>
+				<div class="input-group"><label>單位</label><input type="text" id="input-learn-unit" value="頁"></div>
+			</div>
+			<button class="btn" style="background:var(--primary);" onclick="addLearningTask()">+ 開始</button>
+			<button class="btn" style="background:transparent; color:#666; border:1px solid #ddd; margin-top:10px;" onclick="closeLearningModal()">取消</button>
+		</div>
+	</div>
+	<div id="post-modal" class="modal">
+		<div class="modal-content" style="text-align: left;">
+			<h3 style="text-align: center; margin-top:0;">💬 發表新討論</h3>
+			<div id="post-anon-container" style="margin-bottom: 15px; display: none;">
+				<label style="cursor:pointer; color:#555; font-size:0.95rem; display:flex; align-items:center;">
+					<input type="checkbox" id="check-post-anonymous" style="width:auto; margin-right:8px; transform: scale(1.2);"> 🕵️ 以匿名身分發文
+				</label>
+			</div>
+			<div class="input-group">
+				<textarea id="input-post-content" placeholder="分享你的想法、詢問課程等" tyle="width: 100%; height: 120px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; resize: none; font-size: 1rem;"></textarea>
+				<button type="button" onclick="toggleEmojiPicker('post')" style="position: absolute; bottom: 10px; right: 10px; background: transparent; border: none; font-size: 1.2rem; cursor: pointer;">😀</button>
+				<div id="emoji-picker-post" class="emoji-picker"></div>
+			</div>
+			<button id="btn-send-post" class="btn" style="width: 100%; background: var(--primary);" onclick="addPost()">🚀 發送</button>
+			<button class="btn" style="width: 100%; margin-top: 10px; background: transparent; color: #666; border: 1px solid #ddd;" onclick="closePostModal()">取消</button>
+		</div>
+	</div>
+	<div id="reply-modal" class="modal">
+		<div class="modal-content" style="text-align: left;">
+			<h3 style="text-align: center; margin-top:0;">💬 回覆留言</h3>
+			<p id="reply-target-text" style="color:#666; font-size:0.9rem; margin-bottom:10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">...</p>
+			
+			<div class="input-group" style="position: relative;">
+				<textarea id="input-reply-content" placeholder="寫下你的回覆..." style="width: 100%; height: 100px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; resize: none; font-size: 1rem;"></textarea>
+				
+				<button type="button" onclick="toggleEmojiPicker('reply')" style="position: absolute; bottom: 10px; right: 10px; background: transparent; border: none; font-size: 1.2rem; cursor: pointer;"表情</button>
+				<div id="emoji-picker-reply" class="emoji-picker"></div>
+			</div>
+
+			<button id="btn-send-reply" class="btn" style="width: 100%; background: var(--primary);" onclick="submitReply()">🚀 發送回覆</button>
+			<button class="btn" style="width: 100%; margin-top: 10px; background: transparent; color: #666; border: 1px solid #ddd;" onclick="closeReplyModal()">取消</button>
+		</div>
+	</div>
+	<div id="custom-modal" class="modal" style="z-index: 9999;">
+		<div class="modal-content" style="max-width: 320px; text-align: center; padding: 25px;">
+			<h3 id="custom-modal-title" style="margin-top: 0; color: var(--primary); font-size: 1.3rem;">提示</h3>
+			<p id="custom-modal-message" style="margin: 20px 0; color: #555; line-height: 1.6; font-size: 1rem;"></p>
+			<div id="custom-modal-input-container" style="display:none; margin-top:15px; margin-bottom: 20px;">
+				<input type="text" id="custom-modal-input" class="login-input" style="width:100%; text-align: center;">
+			</div>
+			<div id="custom-modal-actions" style="display: flex; gap: 15px; justify-content: center; margin-top: 25px;"> </div>
+		</div>
+	</div>
+
+	<script>
+		// 🚑 緊急修復腳本：強制註銷所有 Service Worker
+		// 等版面正常後，這段 script 可以刪除
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.getRegistrations().then(function (registrations) {
+				for (let registration of registrations) {
+					console.log('正在移除舊版 SW:', registration);
+					registration.unregister();
+				}
+			});
+		}
+	</script>
+
+	<script src="js/firebase.js"></script>
+	<script src="js/state.js"></script>
+	<script src="js/ui.js"></script>
+	<script src="js/course.js"></script>
+	<script src="js/grade.js"></script>
+	<script src="js/notification.js"></script>
+	<script src="js/data.js"></script>
+	<script src="js/semester.js"></script>
+	<script src="js/auth.js"></script>
+	<script src="js/main.js"></script>
+	<script src="js/calendar.js"></script>
+	<script src="js/accounting.js"></script>
+	<script src="js/notes.js"></script>
+	<script src="js/anniversary.js"></script>
+	<script src="js/learning.js"></script>
+	<script src="js/discussion.js"></script>
+	<script src="js/lottery.js"></script>
+	<!-- <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js'); }</script> -->
+</body>
+
+</html>

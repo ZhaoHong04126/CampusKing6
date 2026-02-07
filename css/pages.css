@@ -1,0 +1,504 @@
+.home-widgets-container {
+    padding: 10px;
+    margin-bottom: 10px;
+    max-width: 100%;
+}
+
+.semester-widget {
+    display: flex;
+    justify-content: space-between; /* 讓左右兩邊推開 */
+    align-items: center;            /* 垂直置中 */
+    padding: 20px 25px;
+    background: var(--card);
+    border-radius: 18px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    flex-wrap: wrap; /* 預防螢幕太窄時破版 */
+}
+
+.semester-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.widget-icon {
+    font-size: 2rem;
+    background: #e3f2fd;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
+
+.widget-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.widget-label {
+    font-size: 0.85rem;
+    color: var(--text-sub);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.semester-widget .semester-select {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary);
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    outline: none;
+    min-width: 100px;
+}
+
+/* --- 修改重點：右側動作區塊 --- */
+.semester-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    /* 移除原本可能存在的邊框或上方間距 */
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+/* 按鈕樣式微調 */
+.semester-actions .btn-icon {
+    background: var(--bg);
+    width: 36px;       /*稍微縮小一點點以適應橫排*/
+    height: 36px;
+    border-radius: 10px;
+    transition: transform 0.2s;
+    border: none;      /*確保沒有邊框*/
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.semester-actions .btn-icon:hover {
+    transform: translateY(-2px);
+    background: #e0e0e0;
+}
+
+.semester-actions .btn-new-sem {
+    padding: 8px 16px; /*稍微調整內距*/
+    border-radius: 10px;
+    background: #2ecc71;
+    color: white;
+    border: none;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
+    white-space: nowrap; /* 防止文字換行 */
+    cursor: pointer;
+}
+
+/* 📱 手機版 RWD 設定 */
+/* 在寬度小於 768px (平板/手機) 時，維持上下堆疊，不然會太擠 */
+@media (max-width: 767px) {
+    .semester-widget {
+        flex-direction: column;
+        align-items: stretch; /* 拉伸填滿 */
+        gap: 15px;
+    }
+
+    .semester-actions {
+        width: 100%;
+        justify-content: space-between;
+        /* 手機版保留分隔線，視覺比較清晰 */
+        border-top: 1px dashed var(--border);
+        padding-top: 15px;
+    }
+    
+    .semester-actions .btn-new-sem {
+        flex: 1;
+    }
+}
+
+/* 🖥️ 電腦版版面微調 */
+@media (min-width: 768px) {
+    .home-widgets-container {
+        padding: 0 40px;
+        margin-top: 20px;
+    }
+}
+/* ************************************* */
+
+.semester-control {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    background: white;
+    padding: 10px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    align-items: center;
+}
+.semester-select {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    background: white;
+    min-width: 0;
+}
+.btn-new-sem {
+    background: #2ecc71;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.week-tabs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    background: #eef2f5;
+    padding: 5px;
+    border-radius: 8px;
+}
+.tab-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 8px 0;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: bold;
+    color: #666;
+    transition: 0.3s;
+}
+.tab-btn.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#login-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #f4f7f6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+.login-card {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    width: 85%;
+    max-width: 320px;
+}
+.login-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+.divider {
+    display: flex;
+    align-items: center;
+    color: #999;
+    margin: 15px 0;
+    font-size: 0.8rem;
+}
+.divider::before, .divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #eee;
+}
+.divider::before { margin-right: 10px; }
+.divider::after { margin-left: 10px; }
+
+.text-link {
+    color: var(--primary);
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 0.9rem;
+}
+.btn-anon {
+    background: transparent;
+    color: #666;
+    border: 1px solid #ddd;
+    padding: 8px;
+    width: 100%;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+.btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: white;
+    color: #555;
+    border: 1px solid #ddd;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+    transition: 0.3s;
+}
+
+#view-info ul {
+    padding-left: 20px;
+    margin: 10px 0;
+}
+#view-info li {
+    margin-bottom: 8px;
+    color: var(--text-sub);
+}
+
+.settings-list {
+    display: flex;
+    flex-direction: column;
+}
+.settings-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 5px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 1rem;
+    color: var(--text-main);
+}
+.settings-item:last-child {
+    border-bottom: none;
+}
+.settings-item:active {
+    background-color: #f9f9f9;
+}
+.settings-icon {
+    margin-right: 10px;
+    font-size: 1.2rem;
+}
+.settings-arrow {
+    color: #ccc;
+    font-size: 0.9rem;
+}
+
+.badge-income {
+    background-color: #e8f5e9;
+    color: #2ecc71;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    margin-right: 5px;
+}
+.badge-expense {
+    background-color: #ffebee;
+    color: #e74c3c;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    margin-right: 5px;
+}
+
+#view-calendar {
+    padding-bottom: 20px;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* 7欄 */
+    gap: 5px;
+    text-align: center;
+}
+
+.cal-day-header {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #888;
+    padding-bottom: 8px;
+}
+
+.cal-day {
+    min-height: 80px; /* 拉高格子高度以便放文字 */
+    height: auto;     /* 讓它隨內容長高 */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* 內容靠上對齊 */
+    align-items: stretch;        /* 內容寬度填滿 */
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    position: relative;
+    padding: 4px;      /* 增加內距 */
+    background: #fff;  /* 確保背景色 */
+    border: 1px solid transparent; /* 預留邊框空間 */
+}
+
+/* 今天的日期樣式微調 */
+.cal-today {
+    background-color: #fff; /* 背景改回白色，以免文字看不清 */
+    border: 2px solid var(--primary); /* 改用邊框標示今天 */
+    color: var(--text-main);
+    box-shadow: none; /* 移除原本陰影，改用邊框 */
+}
+
+/* 日期數字樣式 */
+.cal-date-num {
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+    width: 24px;       /* 固定寬度 */
+    height: 24px;      /* 固定高度 */
+    line-height: 24px;
+    align-self: center; /* 數字置中 */
+    border-radius: 50%;
+}
+
+/* 如果是今天，數字背景變色 */
+.cal-today .cal-date-num {
+    background: var(--primary);
+    color: white;
+}
+
+/* [新增] 活動文字標籤樣式 */
+.cal-event-text {
+    font-size: 0.75rem;       /* 字體縮小 */
+    background-color: #e3f2fd;/* 淺藍色背景 */
+    color: #1565c0;           /* 深藍色文字 */
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-bottom: 3px;       /* 標籤間距 */
+    white-space: nowrap;      /* 不換行 */
+    overflow: hidden;         /* 超出隱藏 */
+    text-overflow: ellipsis;  /* 超出顯示... */
+    text-align: left;         /* 文字靠左 */
+}
+
+/* 深色模式適配 (選用) */
+[data-theme="dark"] .cal-day {
+    background: var(--card);
+}
+[data-theme="dark"] .cal-event-text {
+    background-color: #3a506b;
+    color: #8ecae6;
+}
+
+/* 非本月的日期 (變淡) */
+.cal-other-month {
+    color: #ddd;
+}
+
+/* 有活動的小紅點 */
+.cal-dot {
+    width: 5px;
+    height: 5px;
+    background-color: #e74c3c; /* 紅色 */
+    border-radius: 50%;
+    margin-top: 2px;
+}
+.cal-today .cal-dot {
+    background-color: white; /* 如果是今天，點點改白色才看得到 */
+}
+
+/* 新增 hover 效果，讓使用者知道可以點擊 */
+.cal-day:hover {
+    background-color: #f0f8ff; /* 淺藍色背景 */
+    border: 1px solid var(--primary);
+}
+
+/* --- 討論區回覆與表情符號樣式 --- */
+
+/* 回覆列表容器 */
+.reply-list {
+    margin-top: 10px;
+    padding-left: 10px;
+    border-left: 2px solid #eee;
+}
+
+/* 單則回覆卡片 */
+.reply-item {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+/* 回覆按鈕區域 */
+.post-actions {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed #eee;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* 表情符號選擇器容器 */
+.emoji-picker {
+    display: none; /* 預設隱藏 */
+    position: absolute;
+    bottom: 50px; /* 顯示在按鈕上方 */
+    left: 10px;
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-radius: 8px;
+    padding: 10px;
+    width: 260px;
+    flex-wrap: wrap;
+    gap: 5px;
+    z-index: 2000;
+}
+
+/* 表情符號按鈕 */
+.emoji-btn {
+    font-size: 1.2rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.emoji-btn:hover {
+    background: #f0f0f0;
+}
+
+/* 顯示表情符號時的狀態 */
+.emoji-picker.show {
+    display: flex;
+}

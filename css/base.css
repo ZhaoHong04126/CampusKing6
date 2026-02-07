@@ -1,0 +1,65 @@
+:root {
+    --primary: #4a90e2;
+    --bg: #f4f7f6;
+    --card: #ffffff;
+    --text-main: #333333;
+    --text-sub: #666666;
+    --border: #eeeeee;
+    --danger: #e74c3c;
+    --warning: #f39c12;
+    --input-bg: #ffffff;
+}
+
+[data-theme="dark"] {
+    --primary: #6ab0ff;   
+    --bg: #2c2c2c;        
+    --card: #424242;      
+    --text-main: #ffffff; 
+    --text-sub: #d0d0d0;  
+    --border: #555555;    
+    --danger: #ff867c;    
+    --warning: #ffd54f;
+    --input-bg: #5a5a5a;  
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    margin: 0;
+    padding: 0;
+    color: var(--text-main);
+    padding-bottom: 80px;
+    transition: background 0.3s, color 0.3s;
+}
+
+h2 {
+    margin-top: 0;
+    font-size: 1.1rem;
+    border-bottom: 2px solid var(--bg);
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-main);
+}
+
+.uni-only {
+    display: none;
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.card {
+    background: var(--card) !important;
+    color: var(--text-main);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
