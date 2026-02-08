@@ -9,7 +9,7 @@
 	<link rel="manifest" href="manifest.json">
 	<meta name="theme-color" content="#4a90e2">
 
-	<meta name="description" content="校園王 (CampusMate) - 專為學生設計的個人化校園生活管理助手。提供課表管理、成績追蹤、學期記帳與行事曆功能。">
+	<meta name="description" content="校園王 (CampusKing6) - 專為學生設計的個人化校園生活管理助手。提供課表管理、成績追蹤、學期記帳與行事曆功能。">
 	<meta name="author" content="Huang Zhaohong">
 
 	<meta name="apple-mobile-web-app-capable" content="yes">
@@ -48,25 +48,6 @@
 	</nav>
 	<!-- 登入後的頁面 -->
 	<div class="dashboard-container">
-		<!-- <aside class="sidebar">
-			<div class="nav-menu">
-				<button class="nav-btn" onclick="switchTab('schedule')" id="btn-schedule">
-					<span class="icon">📅</span> <span class="text">課表</span>
-				</button>
-				<button class="nav-btn" onclick="switchTab('accounting')" id="btn-accounting">
-					<span class="icon">💰</span> <span class="text">記帳</span>
-				</button>
-				<button class="nav-btn active" onclick="switchTab('home')" id="btn-home">
-					<span class="icon" style="font-size: 1.4rem;">🏠</span> <span class="text">桌面</span>
-				</button>
-				<button class="nav-btn" onclick="switchTab('grade-manager')" id="btn-grade-manager">
-					<span class="icon">💯</span> <span class="text">成績</span>
-				</button>
-				<button class="nav-btn" onclick="switchTab('settings')" id="btn-settings">
-					<span class="icon">⚙️</span> <span class="text">設定</span>
-				</button>
-			</div>
-		</aside> -->
 		<main class="main-content">
 			<!-- 首頁頁面 -->
 			<div id="view-home">
@@ -612,7 +593,6 @@
 					</div>
 					<hr style="border:0; border-top:1px solid var(--border); margin:25px 0;">
 					<div style="text-align: center;">
-						<p></p>
 						<a href="https://forms.gle/455SvDGUERWmhU5e7" target="_blank">回饋表單</a>
 					</div>
 					<div style="text-align: center;">
@@ -627,7 +607,7 @@
 			<div id="view-discussion" style="display: none;">
 				<div class="card">
 					<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-						<h2 style="border:none; margin:0;">💬 校園討論板</h2>
+						<h2 style="border:none; margin:0;">💬 討論板</h2>
 						<button class="btn" onclick="openPostModal()" style="width:auto; padding:8px 15px;">+ 發文</button>
 					</div>
 					<div id="discussion-list" style="padding-bottom: 20px;"> </div>
@@ -753,10 +733,10 @@
 			</div>
 		</main>
 	</div>
-	<!-- 登入頁面 -->
+	<!-- 廣告頁面 -->
 	<div id="landing-page" style="display: none;">
 		<header class="landing-header">
-			<div class="landing-logo">📅 校園王 CampusMate</div>
+			<div class="landing-logo">📅 校園王 CampusKing6</div>
 			<button class="btn-login-trigger" onclick="openLoginModal()">登入 / 註冊</button>
 		</header>
 		<section id="features" class="features-section">
@@ -837,7 +817,7 @@
 			</div>
 		</section>
 		<footer class="landing-footer">
-			© 2026 CampusMate Inc. Designed by Huang Zhaohong
+			© 2026 CampusKing Inc. Designed by Huang Zhaohong
 		</footer>
 	</div>
 	<!-- 登入區塊 -->
@@ -1005,9 +985,7 @@
 			</div>
 			
 			<button id="btn-save-cal" class="btn" style="width: 100%; background: #333;" onclick="addCalendarEvent()">+ 加入</button>
-			
 			<button id="btn-del-cal" class="btn" style="width: 100%; margin-top: 10px; background: #ffebee; color: #e74c3c; border: 1px solid #e74c3c; display: none;" onclick="deleteCalendarEventFromModal()">🗑️ 刪除此活動</button>
-			
 			<button class="btn" style="width: 100%; margin-top: 10px; background: transparent; color: #666; border: 1px solid #ddd;" onclick="closeCalendarModal()">關閉</button>
 		</div>
 	</div>
@@ -1255,5 +1233,4 @@
 	<script src="js/lottery.js"></script>
 	<!-- <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js'); }</script> -->
 </body>
-
 </html>
