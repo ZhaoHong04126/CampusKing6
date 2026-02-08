@@ -685,8 +685,19 @@ function closeLoginModal() {
     }
 }
 
-// [選用] 平滑捲動
+// // [選用] 平滑捲動
+// function scrollToFeatures() {
+//     // 如果你有做功能介紹區塊，可以用這個
+//     alert("往下捲動查看功能介紹 (請自行擴充 HTML)");
+// }
+
+// [修改] 讓按鈕平滑滾動到特色區塊
 function scrollToFeatures() {
-    // 如果你有做功能介紹區塊，可以用這個
-    alert("往下捲動查看功能介紹 (請自行擴充 HTML)");
+    const section = document.getElementById('features');
+    if (section) {
+        section.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+        });
+    }
 }

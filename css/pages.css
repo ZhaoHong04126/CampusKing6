@@ -1,3 +1,5 @@
+/* 1. 首頁與儀表板組件 (Dashboard Widgets) */
+
 .home-widgets-container {
     padding: 10px;
     margin-bottom: 10px;
@@ -6,14 +8,14 @@
 
 .semester-widget {
     display: flex;
-    justify-content: space-between; /* 讓左右兩邊推開 */
-    align-items: center;            /* 垂直置中 */
+    justify-content: space-between;
+    align-items: center;
     padding: 20px 25px;
     background: var(--card);
     border-radius: 18px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.5);
-    flex-wrap: wrap; /* 預防螢幕太窄時破版 */
+    flex-wrap: wrap;
 }
 
 .semester-info {
@@ -59,25 +61,22 @@
     min-width: 100px;
 }
 
-/* --- 修改重點：右側動作區塊 --- */
 .semester-actions {
     display: flex;
     gap: 10px;
     align-items: center;
-    /* 移除原本可能存在的邊框或上方間距 */
     margin-top: 0;
     padding-top: 0;
     border-top: none;
 }
 
-/* 按鈕樣式微調 */
 .semester-actions .btn-icon {
     background: var(--bg);
-    width: 36px;       /*稍微縮小一點點以適應橫排*/
+    width: 36px;
     height: 36px;
     border-radius: 10px;
     transition: transform 0.2s;
-    border: none;      /*確保沒有邊框*/
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -89,30 +88,28 @@
 }
 
 .semester-actions .btn-new-sem {
-    padding: 8px 16px; /*稍微調整內距*/
+    padding: 8px 16px;
     border-radius: 10px;
     background: #2ecc71;
     color: white;
     border: none;
     font-weight: bold;
     box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
-    white-space: nowrap; /* 防止文字換行 */
+    white-space: nowrap;
     cursor: pointer;
 }
 
-/* 📱 手機版 RWD 設定 */
-/* 在寬度小於 768px (平板/手機) 時，維持上下堆疊，不然會太擠 */
+/* RWD: 手機版適配 */
 @media (max-width: 767px) {
     .semester-widget {
         flex-direction: column;
-        align-items: stretch; /* 拉伸填滿 */
+        align-items: stretch;
         gap: 15px;
     }
 
     .semester-actions {
         width: 100%;
         justify-content: space-between;
-        /* 手機版保留分隔線，視覺比較清晰 */
         border-top: 1px dashed var(--border);
         padding-top: 15px;
     }
@@ -122,43 +119,11 @@
     }
 }
 
-/* 🖥️ 電腦版版面微調 */
 @media (min-width: 768px) {
     .home-widgets-container {
         padding: 0 40px;
         margin-top: 20px;
     }
-}
-/* ************************************* */
-
-.semester-control {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 15px;
-    background: white;
-    padding: 10px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    align-items: center;
-}
-.semester-select {
-    flex: 1;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 1rem;
-    background: white;
-    min-width: 0;
-}
-.btn-new-sem {
-    background: #2ecc71;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    white-space: nowrap;
 }
 
 .week-tabs {
@@ -169,6 +134,7 @@
     padding: 5px;
     border-radius: 8px;
 }
+
 .tab-btn {
     flex: 1;
     border: none;
@@ -180,11 +146,14 @@
     color: #666;
     transition: 0.3s;
 }
+
 .tab-btn.active {
     background: var(--primary);
     color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+/* 2. 登入與驗證介面 (Auth UI) */
 
 #login-overlay {
     position: fixed;
@@ -198,6 +167,7 @@
     align-items: center;
     z-index: 2000;
 }
+
 .login-card {
     background: white;
     padding: 30px;
@@ -206,7 +176,9 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     width: 85%;
     max-width: 320px;
+    position: relative; /* 為了放關閉按鈕 */
 }
+
 .login-input {
     width: 100%;
     padding: 10px;
@@ -216,6 +188,7 @@
     box-sizing: border-box;
     font-size: 1rem;
 }
+
 .divider {
     display: flex;
     align-items: center;
@@ -229,8 +202,12 @@
     height: 1px;
     background: #eee;
 }
-.divider::before { margin-right: 10px; }
-.divider::after { margin-left: 10px; }
+.divider::before {
+    margin-right: 10px;
+}
+.divider::after {
+    margin-left: 10px;
+}
 
 .text-link {
     color: var(--primary);
@@ -238,6 +215,7 @@
     text-decoration: underline;
     font-size: 0.9rem;
 }
+
 .btn-anon {
     background: transparent;
     color: #666;
@@ -249,6 +227,7 @@
     font-size: 0.9rem;
     margin-top: 10px;
 }
+
 .btn-google {
     display: flex;
     align-items: center;
@@ -265,6 +244,20 @@
     margin-top: 20px;
     transition: 0.3s;
 }
+
+/* 登入視窗的關閉按鈕 */
+.btn-close-modal {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    color: #999;
+    cursor: pointer;
+}
+
+/* 3. 系統資訊頁與設定 (Settings & Info) */
 
 #view-info ul {
     padding-left: 20px;
@@ -322,6 +315,8 @@
     margin-right: 5px;
 }
 
+/* 4. 行事曆組件 (Calendar) */
+
 #view-calendar {
     padding-bottom: 20px;
 }
@@ -337,7 +332,7 @@
 
 .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr); /* 7欄 */
+    grid-template-columns: repeat(7, 1fr);
     gap: 5px;
     text-align: center;
 }
@@ -350,63 +345,62 @@
 }
 
 .cal-day {
-    min-height: 80px; /* 拉高格子高度以便放文字 */
-    height: auto;     /* 讓它隨內容長高 */
+    min-height: 80px;
+    height: auto;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* 內容靠上對齊 */
-    align-items: stretch;        /* 內容寬度填滿 */
+    justify-content: flex-start;
+    align-items: stretch;
     border-radius: 8px;
     cursor: pointer;
     font-size: 1rem;
     position: relative;
-    padding: 4px;      /* 增加內距 */
-    background: #fff;  /* 確保背景色 */
-    border: 1px solid transparent; /* 預留邊框空間 */
+    padding: 4px;
+    background: #fff;
+    border: 1px solid transparent;
 }
 
-/* 今天的日期樣式微調 */
 .cal-today {
-    background-color: #fff; /* 背景改回白色，以免文字看不清 */
-    border: 2px solid var(--primary); /* 改用邊框標示今天 */
+    background-color: #fff;
+    border: 2px solid var(--primary);
     color: var(--text-main);
-    box-shadow: none; /* 移除原本陰影，改用邊框 */
 }
 
-/* 日期數字樣式 */
 .cal-date-num {
     text-align: center;
     font-size: 0.9rem;
     font-weight: bold;
     margin-bottom: 4px;
-    width: 24px;       /* 固定寬度 */
-    height: 24px;      /* 固定高度 */
+    width: 24px;
+    height: 24px;
     line-height: 24px;
-    align-self: center; /* 數字置中 */
+    align-self: center;
     border-radius: 50%;
 }
-
-/* 如果是今天，數字背景變色 */
 .cal-today .cal-date-num {
     background: var(--primary);
     color: white;
 }
 
-/* [新增] 活動文字標籤樣式 */
 .cal-event-text {
-    font-size: 0.75rem;       /* 字體縮小 */
-    background-color: #e3f2fd;/* 淺藍色背景 */
-    color: #1565c0;           /* 深藍色文字 */
+    font-size: 0.75rem;
+    background-color: #e3f2fd;
+    color: #1565c0;
     padding: 2px 6px;
     border-radius: 4px;
-    margin-bottom: 3px;       /* 標籤間距 */
-    white-space: nowrap;      /* 不換行 */
-    overflow: hidden;         /* 超出隱藏 */
-    text-overflow: ellipsis;  /* 超出顯示... */
-    text-align: left;         /* 文字靠左 */
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
 }
 
-/* 深色模式適配 (選用) */
+.cal-day:hover {
+    background-color: #f0f8ff;
+    border: 1px solid var(--primary);
+}
+
+/* 深色模式適配 */
 [data-theme="dark"] .cal-day {
     background: var(--card);
 }
@@ -414,40 +408,27 @@
     background-color: #3a506b;
     color: #8ecae6;
 }
-
-/* 非本月的日期 (變淡) */
 .cal-other-month {
     color: #ddd;
 }
-
-/* 有活動的小紅點 */
 .cal-dot {
     width: 5px;
     height: 5px;
-    background-color: #e74c3c; /* 紅色 */
+    background-color: #e74c3c;
     border-radius: 50%;
     margin-top: 2px;
 }
 .cal-today .cal-dot {
-    background-color: white; /* 如果是今天，點點改白色才看得到 */
+    background-color: white;
 }
 
-/* 新增 hover 效果，讓使用者知道可以點擊 */
-.cal-day:hover {
-    background-color: #f0f8ff; /* 淺藍色背景 */
-    border: 1px solid var(--primary);
-}
+/* 5. 討論區組件 (Discussion) */
 
-/* --- 討論區回覆與表情符號樣式 --- */
-
-/* 回覆列表容器 */
 .reply-list {
     margin-top: 10px;
     padding-left: 10px;
     border-left: 2px solid #eee;
 }
-
-/* 單則回覆卡片 */
 .reply-item {
     background: #f8f9fa;
     padding: 10px;
@@ -455,8 +436,6 @@
     margin-bottom: 8px;
     font-size: 0.9rem;
 }
-
-/* 回覆按鈕區域 */
 .post-actions {
     margin-top: 10px;
     padding-top: 10px;
@@ -465,12 +444,10 @@
     justify-content: flex-end;
     gap: 10px;
 }
-
-/* 表情符號選擇器容器 */
 .emoji-picker {
-    display: none; /* 預設隱藏 */
+    display: none;
     position: absolute;
-    bottom: 50px; /* 顯示在按鈕上方 */
+    bottom: 50px;
     left: 10px;
     background: white;
     border: 1px solid #ddd;
@@ -482,8 +459,6 @@
     gap: 5px;
     z-index: 2000;
 }
-
-/* 表情符號按鈕 */
 .emoji-btn {
     font-size: 1.2rem;
     background: transparent;
@@ -493,29 +468,32 @@
     border-radius: 4px;
     transition: background 0.2s;
 }
-
 .emoji-btn:hover {
-    background: #f0f0f0;
-}
-
-/* 顯示表情符號時的狀態 */
+    background: #f0f0f0
+ }
 .emoji-picker.show {
     display: flex;
 }
 
+/* 6. 廣告落地頁 (Landing Page) */
 
-/* --- Landing Page 廣告頁樣式 --- */
 #landing-page {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100vh;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* 質感漸層背景 */
-    display: flex;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    /* 預設不使用 flex，由 JS 控制顯示/隱藏 */
+    display: none;
     flex-direction: column;
     overflow-y: auto;
-    z-index: 1500; /* 蓋在 dashboard 之上，但在 login-overlay 之下 */
+    z-index: 1500;
+}
+
+/* 當 JS 設定 style="display: flex" 時強制生效 */
+#landing-page[style*="flex"] {
+    display: flex !important;
 }
 
 .landing-header {
@@ -588,7 +566,6 @@
     box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
     transition: transform 0.2s;
 }
-
 .btn-cta:hover {
     transform: translateY(-2px);
 }
@@ -603,103 +580,99 @@
     text-decoration: underline;
 }
 
-/* 浮動卡片裝飾 */
+/* --- 9 個標籤的圓形展示 (Hero Image) --- */
+
 .hero-image {
     position: relative;
-    width: 380px;       /* 設定為正方形，作為圓的容器 */
-    height: 380px;
-    margin: 20px auto;  /* 居中 */
-    /* border: 1px dashed #ddd; */ /* 開發時可打開此行輔助對齊 */
+    width: 400px;       /* 9個項目需要大一點的空間 */
+    height: 400px;
+    margin: 20px auto;
 }
 
 .floating-card {
     position: absolute;
     background: white;
-    padding: 10px 18px;
-    border-radius: 20px; /* 改得更圓潤一點 */
+    padding: 10px 16px;
+    border-radius: 20px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     font-weight: bold;
     color: #333;
     font-size: 0.9rem;
-    white-space: nowrap; /* 不換行 */
+    white-space: nowrap;
     z-index: 2;
-    
-    /* 關鍵：設定基準點為「水平置中」，這樣計算座標才會準 */
-    transform: translateX(-50%);
-    
-    /* 套用浮動動畫 */
+    transform: translateX(-50%); /* 基準點水平置中 */
     animation: float-circle 6s ease-in-out infinite;
 }
 
-/* --- 個別標籤的位置、顏色與動畫延遲 --- */
-
-/* 1. 正上方 (0度) */
+/* 9個標籤的圓周座標 (360/9 = 40度) */
 .c1 {
-    top: 0%;
+    top: 2%;
     left: 50%;
     color: #4a90e2;
     border-left: 4px solid #4a90e2;
     animation-delay: 0s;
 }
-
-/* 2. 右上方 (約51度) */
 .c2 {
-    top: 18%;
-    left: 85%;
-    color: #9b59b6;
-    border-left: 4px solid #9b59b6;
+    top: 12%;
+    left: 80%;
+    color: #e84393;
+    border-left: 4px solid #e84393;
     animation-delay: 1s;
 }
-
-/* 3. 右下方 (約102度) */
 .c3 {
-    top: 60%;
+    top: 40%;
     left: 96%;
     color: #e74c3c;
     border-left: 4px solid #e74c3c;
     animation-delay: 2s;
 }
-
-/* 4. 底部偏右 (約154度) */
 .c4 {
-    top: 92%;
-    left: 78%;
-    color: #f39c12;
-    border-left: 4px solid #f39c12;
+    top: 72%;
+    left: 90%;
+    color: #f1c40f;
+    border-left: 4px solid #f1c40f;
     animation-delay: 3s;
 }
-
-/* 5. 底部偏左 (約205度) */
 .c5 {
-    top: 92%;
-    left: 22%;
-    color: #1abc9c;
-    border-left: 4px solid #1abc9c;
+    top: 94%;
+    left: 66%;
+    color: #7f8c8d;
+    border-left: 4px solid #7f8c8d;
     animation-delay: 4s;
 }
-
-/* 6. 左下方 (約257度) */
 .c6 {
-    top: 60%;
-    left: 4%;
-    color: #2ecc71;
-    border-left: 4px solid #2ecc71;
-    animation-delay: 5s;
+    top: 94%;
+    left: 34%;
+    color: #d6a2e8;
+    border-left: 4px solid #d6a2e8;
+    animation-delay: 0.5s;
 }
-
-/* 7. 左上方 (約308度) */
 .c7 {
-    top: 18%;
-    left: 15%;
-    color: #e84393;
-    border-left: 4px solid #e84393;
+    top: 72%;
+    left: 10%;
+    color: #1abc9c;
+    border-left: 4px solid #1abc9c;
     animation-delay: 1.5s;
 }
+.c8 {
+    top: 40%;
+    left: 4%;
+    color: #9b59b6;
+    border-left: 4px solid #9b59b6;
+    animation-delay: 2.5s;
+}
+.c9 {
+    top: 12%;
+    left: 20%;
+    color: #f39c12;
+    border-left: 4px solid #f39c12;
+    animation-delay: 3.5s;
+}
 
-/* --- 專用的浮動動畫 (必須包含 translateX(-50%) 以維持定位) --- */
+/* 專用浮動動畫 */
 @keyframes float-circle {
     0%   { transform: translateX(-50%) translateY(0px); }
-    50%  { transform: translateX(-50%) translateY(-10px); } /* 上浮幅度 */
+    50%  { transform: translateX(-50%) translateY(-8px); }
     100% { transform: translateX(-50%) translateY(0px); }
 }
 
@@ -710,32 +683,123 @@
     font-size: 0.8rem;
 }
 
-/* 登入視窗的關閉按鈕 */
-.btn-close-modal {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: transparent;
-    border: none;
-    font-size: 1.2rem;
-    color: #999;
-    cursor: pointer;
+/* 手機版適配 (圓圈縮小) */
+@media (max-width: 480px) {
+    .landing-header { padding: 15px 20px; }
+    .hero-title { font-size: 2.5rem; }
+    .landing-hero { flex-direction: column-reverse; text-align: center; gap: 20px; }
+    
+    .hero-image {
+        width: 320px;
+        height: 320px;
+        margin-top: 50px;
+    }
+    .floating-card {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+        border-radius: 15px;
+    }
+    /* 微調手機版位置 */
+    .c3 { left: 94%; } 
+    .c8 { left: 6%; }
 }
 
-/* --- 手機版適配 (縮小圓圈) --- */
-@media (max-width: 450px) {
-    .hero-image {
-        width: 300px;  /* 縮小容器尺寸 */
-        height: 300px;
-        margin-top: 40px;
-    }
-    
-    .floating-card {
-        padding: 8px 12px;
-        font-size: 0.8rem; /* 字體縮小 */
-    }
-    
-    /* 手機版微調座標，避免太靠邊被切到 */
-    .c3 { left: 92%; } 
-    .c6 { left: 8%; }
+/* 7. 功能特色介紹區塊 (Features Section) */
+
+.features-section {
+    padding: 60px 20px;
+    background: white;
+    text-align: center;
+    scroll-margin-top: 20px;
+}
+
+.section-title {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 10px;
+    justify-content: center;
+    border-bottom: none;
+}
+
+.section-subtitle {
+    color: #666;
+    margin-bottom: 50px;
+    font-size: 1.1rem;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 自動適應 */
+    gap: 30px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 10px;
+}
+
+.feature-card {
+    background: #f9f9f9;
+    padding: 30px;
+    border-radius: 16px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid #eee;
+    text-align: left;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    background: white;
+    border-color: #4a90e2;
+}
+
+.f-icon {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    background: #e3f2fd;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
+
+.feature-card h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.feature-card p {
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.bottom-cta {
+    margin-top: 80px;
+    padding: 40px;
+    background: linear-gradient(135deg, #e3f2fd 0%, #f5f7fa 100%);
+    border-radius: 20px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.bottom-cta h3 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.btn-cta.large {
+    font-size: 1.2rem;
+    padding: 15px 40px;
+    background: #4a90e2;
+    box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+}
+
+.btn-cta.large:hover {
+    background: #357abd;
 }

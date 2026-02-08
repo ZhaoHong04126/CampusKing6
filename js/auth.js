@@ -163,7 +163,7 @@ function updateLoginUI(isLoggedIn) {
     const dashboard = document.querySelector('.dashboard-container'); // 主程式介面
     const userInfo = document.getElementById('user-info');
     const userPhoto = document.getElementById('user-photo');
-    
+    console.log("Login Status:", isLoggedIn); // 除錯用
     if (isLoggedIn) {
         // --- 登入狀態 ---
         // 隱藏登入彈窗

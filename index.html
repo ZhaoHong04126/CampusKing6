@@ -48,7 +48,7 @@
 	</nav>
 	<!-- 登入後的頁面 -->
 	<div class="dashboard-container">
-		<aside class="sidebar">
+		<!-- <aside class="sidebar">
 			<div class="nav-menu">
 				<button class="nav-btn" onclick="switchTab('schedule')" id="btn-schedule">
 					<span class="icon">📅</span> <span class="text">課表</span>
@@ -66,8 +66,7 @@
 					<span class="icon">⚙️</span> <span class="text">設定</span>
 				</button>
 			</div>
-		</aside>
-
+		</aside> -->
 		<main class="main-content">
 			<!-- 首頁頁面 -->
 			<div id="view-home">
@@ -760,32 +759,88 @@
 			<div class="landing-logo">📅 校園王 CampusMate</div>
 			<button class="btn-login-trigger" onclick="openLoginModal()">登入 / 註冊</button>
 		</header>
+		<section id="features" class="features-section">
+			<h2 class="section-title">為什麼選擇校園王？</h2>
+			<p class="section-subtitle">專為學生打造的八大核心功能，讓校園生活井井有條。</p>
+			
+			<div class="features-grid">
+				<div class="feature-card">
+					<div class="f-icon">📅</div>
+					<h3>智慧課表</h3>
+					<p>支援輸入「1-3」自動建立連堂課程，並具備上課前 10 分鐘推播提醒，再也不怕跑錯教室。</p>
+				</div>
 
-		<section class="landing-hero">
-			<div class="hero-content">
-				<h1 class="hero-title">重新定義你的<br>校園生活</h1>
-				<p class="hero-subtitle">整合課表、成績、記帳與社群。<br>唯有校園王，懂你的大學生活。</p>
-				<div class="hero-actions">
-					<button class="btn-cta" onclick="openLoginModal()">🔥 立即免費開始</button>
-					<button class="btn-secondary" onclick="scrollToFeatures()">了解更多</button>
+				<div class="feature-card">
+					<div class="f-icon">🎰</div>
+					<h3>幸運籤筒</h3>
+					<p>解決選擇困難症救星！自訂午餐、飲料選項隨機抽取，今天吃什麼由命運決定。</p>
+				</div>
+
+				<div class="feature-card">
+					<div class="f-icon">🗓️</div>
+					<h3>行事曆</h3>
+					<p>視覺化月曆介面，自動顯示學期週次，整合活動清單，重要日程一眼掌握。</p>
+				</div>
+
+				<div class="feature-card">
+					<div class="f-icon">💯</div>
+					<h3>成績管理</h3>
+					<p>自動計算學分加權平均 (GPA)，並透過圖表追蹤「畢業學分門檻」達成率，掌握學業進度。</p>
+				</div>
+
+				<div class="feature-card">
+					<div class="f-icon">💰</div>
+					<h3>學期記帳</h3>
+					<p>專屬學生的記帳工具，支援多帳戶管理 (如 LINE Pay) 與月報表分析，清楚掌握收支流向。</p>
+				</div>
+
+				<div class="feature-card">
+					<div class="f-icon">📝</div>
+					<h3>快述記事</h3>
+					<p>極簡備忘錄，隨手紀錄待辦事項或靈感，支援自動時間戳記，操作快速不囉嗦。</p>
+				</div>
+
+				<div class="feature-card">
+					<div class="f-icon">💝</div>
+					<h3>紀念日</h3>
+					<p>紀錄生日、交往紀念等重要日子，自動計算「還有幾天」或「已過去幾天」，不再忘記。</p>
+				</div>
+
+				<div class="feature-card">
+					<div class="f-icon">📚</div>
+					<h3>學習進度</h3>
+					<p>自訂讀書計畫與目標頁數，透過視覺化進度條追蹤完成率，看著進度條變綠超有成就感。</p>
+				</div>
+
+				<div class="feature-card">
+					<div class="f-icon">💬</div>
+					<h3>校園討論</h3>
+					<p>內建匿名討論區，可以詢問課程評價、尋找組員，支援表情符號與回覆功能，互動更生動。</p>
+				</div>
+
+				<div class="feature-card">
+					<div class="f-icon">☁️</div>
+					<h3>雲端同步</h3>
+					<p>資料自動加密備份至雲端，換手機、換電腦都能無縫接軌，資料永不遺失。</p>
+				</div>
+
+				<div class="feature-card">
+					<div class="f-icon">📱</div>
+					<h3>PWA 支援</h3>
+					<p>採用先進 Web 技術，可安裝至手機桌面像 App 一樣使用，並支援深色模式 (Dark Mode)。</p>
 				</div>
 			</div>
-			<div class="hero-image">
-				<div class="floating-card c1">📅 智慧課表</div>
-				<div class="floating-card c2">💯 GPA 計算</div>
-				<div class="floating-card c3">💰 記帳管家</div>
-				<div class="floating-card c4">💬 校園討論</div>
-				<div class="floating-card c5">📚 學習進度</div>
-				<div class="floating-card c6">🗓️ 行事曆</div>
-				<div class="floating-card c7">🎰 幸運籤筒</div>
+			
+			<div class="bottom-cta">
+				<h3>準備好開始了嗎？</h3>
+				<button class="btn-cta large" onclick="openLoginModal()">🚀 免費註冊 / 登入</button>
 			</div>
 		</section>
-		
 		<footer class="landing-footer">
 			© 2026 CampusMate Inc. Designed by Huang Zhaohong
 		</footer>
 	</div>
-
+	<!-- 登入區塊 -->
 	<div id="login-overlay" style="display: none;">
 		<div class="login-card">
 			<button class="btn-close-modal" onclick="closeLoginModal()">✖</button>
